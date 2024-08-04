@@ -1,0 +1,629 @@
+<html><head><base href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTH2EWaq76YUmxodz1J433l6X4P2rS4dfFKA&s%20je%20souhaiterais%20ceux%20ci%20comme%20logo%20de%20mon%20jeux%20merci%20de%20ne%20rien%20modifier%20au%20contenu%20de%20la%20page">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sports Betting Simulator</title>
+<style>
+  body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+  }
+  .container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  h1, h2, h3 {
+    text-align: center;
+    color: #333;
+  }
+  .menu {
+    display: flex;
+    justify-content: space-around;
+    margin-bottom: 20px;
+  }
+  .menu button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  .menu button:hover {
+    background-color: #45a049;
+  }
+  .content {
+    background-color: white;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+  }
+  .form-group {
+    margin-bottom: 15px;
+  }
+  label {
+    display: block;
+    margin-bottom: 5px;
+  }
+  input, select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+  }
+  button {
+    display: block;
+    width: 100%;
+    padding: 10px;
+    background-color: #008CBA;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    margin-bottom: 10px;
+  }
+  button:hover {
+    background-color: #007B9A;
+  }
+  #sportsList {
+    list-style-type: none;
+    padding: 0;
+  }
+  #sportsList li {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 5px 0;
+  }
+  #sportsList li button {
+    width: auto;
+    padding: 5px 10px;
+    background-color: #f44336;
+  }
+  #pendingBets {
+    margin-top: 20px;
+  }
+  .bet-card {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 10px;
+    margin-bottom: 10px;
+  }
+  .result-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+  }
+  .result-buttons button {
+    width: 30%;
+    padding: 8px;
+    font-size: 14px;
+  }
+  .win { background-color: #4CAF50; }
+  .lose { background-color: #f44336; }
+  .neutral { background-color: #ff9800; }
+  .stats-container {
+    display: flex;
+    justify-content: space-around;
+    flex-wrap: wrap;
+  }
+  .stat-box {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin: 10px;
+    text-align: center;
+    width: calc(50% - 20px);
+  }
+  .stat-value {
+    font-size: 24px;
+    font-weight: bold;
+    margin: 10px 0;
+  }
+  #balanceInfo {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    background-color: #4CAF50;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    font-weight: bold;
+  }
+  .shop-item {
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    padding: 15px;
+    margin-bottom: 15px;
+  }
+  .shop-item h3 {
+    margin-top: 0;
+  }
+  .shop-item p {
+    margin-bottom: 10px;
+  }
+  .shop-item button {
+    width: auto;
+    padding: 8px 15px;
+  }
+  #dailyBonus {
+    background-color: #FFA500;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+    margin-bottom: 20px;
+    font-weight: bold;
+  }
+  #autosaveStatus {
+    position: fixed;
+    bottom: 10px;
+    right: 10px;
+    background-color: #008CBA;
+    color: white;
+    padding: 5px 10px;
+    border-radius: 5px;
+    font-size: 12px;
+  }
+  #logo {
+    display: block;
+    margin: 0 auto 20px;
+    max-width: 100%;
+    height: auto;
+  }
+</style>
+</head>
+<body>
+  <div id="balanceInfo">
+    <div>Solde: <span id="balanceAmount">1000</span>€</div>
+    <div>Revenu passif: <span id="passiveIncome">0</span>€/jour</div>
+  </div>
+  <div class="container">
+    <img id="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTH2EWaq76YUmxodz1J433l6X4P2rS4dfFKA&s" alt="Logo du jeu de paris sportifs" width="200" height="200">
+    <h1>Sports Betting Simulator</h1>
+    
+    <div id="dailyBonus">
+      Bonus journalier: <span id="dailyBonusAmount">100</span>€
+      <button onclick="claimDailyBonus()">Réclamer</button>
+    </div>
+    
+    <div class="menu">
+      <button onclick="showSection('betting')">Parier</button>
+      <button onclick="showSection('results')">Résultats</button>
+      <button onclick="showSection('stats')">Statistiques</button>
+      <button onclick="showSection('shop')">Boutique</button>
+    </div>
+    
+    <div id="content" class="content">
+      <!-- Betting Section -->
+      <div id="betting">
+        <h2>Placer un pari</h2>
+        <div class="form-group">
+          <label for="sport">Sport:</label>
+          <select id="sport"></select>
+        </div>
+        <div class="form-group">
+          <label for="newSport">Ajouter un nouveau sport:</label>
+          <input type="text" id="newSport" placeholder="Nom du sport">
+          <button onclick="addSport()">Ajouter</button>
+        </div>
+        <h3>Sports disponibles:</h3>
+        <ul id="sportsList"></ul>
+        <div class="form-group">
+          <label for="bet">Paris:</label>
+          <input type="text" id="bet" placeholder="Ex: PSG vs Marseille">
+        </div>
+        <div class="form-group">
+          <label for="betType">Type de mise:</label>
+          <input type="text" id="betType" placeholder="Entrez votre type de mise personnalisé">
+        </div>
+        <div class="form-group">
+          <label for="odds">Cote:</label>
+          <input type="number" id="odds" step="0.01" min="1">
+        </div>
+        <div class="form-group">
+          <label for="stake">Mise (€):</label>
+          <input type="number" id="stake" min="1">
+        </div>
+        <button onclick="placeBet()">Placer le pari</button>
+      </div>
+      
+      <!-- Results Section -->
+      <div id="results" style="display:none;">
+        <h2>Résultats</h2>
+        <div id="pendingBets"></div>
+      </div>
+      
+      <!-- Stats Section -->
+      <div id="stats" style="display:none;">
+        <h2>Statistiques</h2>
+        <div class="stats-container">
+          <div class="stat-box">
+            <h3>Taux de réussite</h3>
+            <div id="winRate" class="stat-value">0%</div>
+          </div>
+          <div class="stat-box">
+            <h3>Taux d'échec</h3>
+            <div id="lossRate" class="stat-value">0%</div>
+          </div>
+          <div class="stat-box">
+            <h3>Taux de remboursement</h3>
+            <div id="neutralRate" class="stat-value">0%</div>
+          </div>
+          <div class="stat-box">
+            <h3>Profit total</h3>
+            <div id="totalProfit" class="stat-value">0€</div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Shop Section -->
+      <div id="shop" style="display:none;">
+        <h2>Boutique</h2>
+        <div class="shop-item">
+          <h3>Booster de Cote</h3>
+          <p>Augmente la cote de votre prochain pari de 1.50</p>
+          <p>Prix: 100€</p>
+          <button onclick="buyBooster('odds')">Acheter</button>
+        </div>
+        <div class="shop-item">
+          <h3>Assurance Pari</h3>
+          <p>Remboursement en cas de défaite pour votre prochain pari</p>
+          <p>Prix: 200€</p>
+          <button onclick="buyBooster('insurance')">Acheter</button>
+        </div>
+        <div class="shop-item">
+          <h3>Entreprise: Café du Coin</h3>
+          <p>Gagnez 500€ par jour</p>
+          <p>Prix: 100000€</p>
+          <button onclick="buyEnterprise('cafe')">Acheter</button>
+        </div>
+        <div class="shop-item">
+          <h3>Entreprise: Salle de Sport</h3>
+          <p>Gagnez 10000€ par jour</p>
+          <p>Prix: 1000000€</p>
+          <button onclick="buyEnterprise('gym')">Acheter</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="autosaveStatus">Sauvegarde automatique activée</div>
+
+  <script>
+    let sports = ['Football', 'Basketball', 'Tennis'];
+    let pendingBets = [];
+    let balance = 1000;
+    let stats = {
+      totalBets: 0,
+      wins: 0,
+      losses: 0,
+      neutrals: 0,
+      totalProfit: 0
+    };
+    let boosters = {
+      odds: 0,
+      insurance: 0
+    };
+    let enterprises = {
+      cafe: 0,
+      gym: 0
+    };
+    let lastDailyUpdate = new Date().getTime();
+    let lastDailyBonusClaim = null;
+
+    function initializeSports() {
+      const sportSelect = document.getElementById('sport');
+      const sportsList = document.getElementById('sportsList');
+      
+      sportSelect.innerHTML = '';
+      sportsList.innerHTML = '';
+      
+      sports.forEach(sport => {
+        const option = document.createElement('option');
+        option.value = sport.toLowerCase();
+        option.textContent = sport;
+        sportSelect.appendChild(option);
+        
+        const li = document.createElement('li');
+        li.innerHTML = `${sport} <button onclick="removeSport('${sport}')">Supprimer</button>`;
+        sportsList.appendChild(li);
+      });
+    }
+
+    function addSport() {
+      const newSport = document.getElementById('newSport').value.trim();
+      if (newSport && !sports.includes(newSport)) {
+        sports.push(newSport);
+        initializeSports();
+        document.getElementById('newSport').value = '';
+        saveGame();
+      } else {
+        alert('Veuillez entrer un nom de sport valide et unique.');
+      }
+    }
+
+    function removeSport(sport) {
+      sports = sports.filter(s => s !== sport);
+      initializeSports();
+      saveGame();
+    }
+
+    function showSection(sectionId) {
+      const sections = ['betting', 'results', 'stats', 'shop'];
+      sections.forEach(section => {
+        document.getElementById(section).style.display = section === sectionId ? 'block' : 'none';
+      });
+      if (sectionId === 'stats') {
+        updateStats();
+      }
+    }
+
+    function placeBet() {
+      const sport = document.getElementById('sport').value;
+      const bet = document.getElementById('bet').value;
+      const betType = document.getElementById('betType').value;
+      let odds = parseFloat(document.getElementById('odds').value);
+      const stake = parseFloat(document.getElementById('stake').value);
+
+      if (bet && betType && odds && stake) {
+        if (stake > balance) {
+          alert("Vous n'avez pas assez de fonds pour placer ce pari.");
+          return;
+        }
+
+        if (boosters.odds > 0) {
+          odds += 1.50;
+          boosters.odds--;
+          alert("Booster de cote appliqué! La cote a été augmentée de 1.50.");
+        }
+
+        const newBet = { sport, bet, betType, odds, stake, insured: boosters.insurance > 0 };
+        if (newBet.insured) {
+          boosters.insurance--;
+          alert("Assurance pari appliquée! Vous serez remboursé en cas de défaite.");
+        }
+
+        pendingBets.push(newBet);
+        balance -= stake;
+        updatePendingBets();
+        updateBalance();
+        saveGame();
+        alert(`Pari placé avec succès !\nSport: ${sport}\nPari: ${bet}\nType de mise: ${betType}\nCote: ${odds}\nMise: ${stake}€`);
+        document.getElementById('bet').value = '';
+        document.getElementById('betType').value = '';
+        document.getElementById('odds').value = '';
+        document.getElementById('stake').value = '';
+      } else {
+        alert('Veuillez remplir tous les champs avant de placer votre pari.');
+      }
+    }
+
+    function updatePendingBets() {
+      const pendingBetsDiv = document.getElementById('pendingBets');
+      pendingBetsDiv.innerHTML = '<h3>Paris en attente</h3>';
+      pendingBets.forEach((bet, index) => {
+        const betCard = document.createElement('div');
+        betCard.className = 'bet-card';
+        betCard.innerHTML = `
+          <p><strong>Sport:</strong> ${bet.sport}</p>
+          <p><strong>Pari:</strong> ${bet.bet}</p>
+          <p><strong>Type de mise:</strong> ${bet.betType}</p>
+          <p><strong>Cote:</strong> ${bet.odds}</p>
+          <p><strong>Mise:</strong> ${bet.stake}€</p>
+          ${bet.insured ? '<p><strong>Assuré</strong></p>' : ''}
+          <div class="result-buttons">
+            <button class="win" onclick="resolveBet(${index}, 'win')">Gagné</button>
+            <button class="lose" onclick="resolveBet(${index}, 'lose')">Perdu</button>
+            <button class="neutral" onclick="resolveBet(${index}, 'neutral')">Neutre</button>
+          </div>
+        `;
+        pendingBetsDiv.appendChild(betCard);
+      });
+    }
+
+    function resolveBet(index, result) {
+      const bet = pendingBets[index];
+      let message = '';
+      stats.totalBets++;
+
+      switch (result) {
+        case 'win':
+          const profit = bet.stake * bet.odds - bet.stake;
+          balance += bet.stake * bet.odds;
+          stats.wins++;
+          stats.totalProfit += profit;
+          message = `Félicitations ! Vous avez gagné ${profit.toFixed(2)}€ sur ce pari.`;
+          break;
+        case 'lose':
+          if (bet.insured) {
+            balance += bet.stake;
+            message = `Vous avez perdu, mais votre pari était assuré. Votre mise de ${bet.stake}€ vous a été remboursée.`;
+          } else {
+            stats.losses++;
+            stats.totalProfit -= bet.stake;
+            message = `Désolé, vous avez perdu ${bet.stake}€ sur ce pari.`;
+          }
+          break;
+        case 'neutral':
+          balance += bet.stake;
+          stats.neutrals++;
+          message = `Le pari a été annulé. Votre mise de ${bet.stake}€ vous a été remboursée.`;
+          break;
+      }
+
+      pendingBets.splice(index, 1);
+      updatePendingBets();
+      updateBalance();
+      updateStats();
+      saveGame();
+      alert(message);
+    }
+
+    function updateBalance() {
+      document.getElementById('balanceAmount').textContent = balance.toFixed(2);
+      const passiveIncome = enterprises.cafe * 500 + enterprises.gym * 10000;
+      document.getElementById('passiveIncome').textContent = passiveIncome.toFixed(2);
+    }
+
+    function updateStats() {
+      const totalBets = stats.wins + stats.losses + stats.neutrals;
+      const winRate = totalBets > 0 ? (stats.wins / totalBets * 100).toFixed(2) : 0;
+      const lossRate = totalBets > 0 ? (stats.losses / totalBets * 100).toFixed(2) : 0;
+      const neutralRate = totalBets > 0 ? (stats.neutrals / totalBets * 100).toFixed(2) : 0;
+
+      document.getElementById('winRate').textContent = winRate + '%';
+      document.getElementById('lossRate').textContent = lossRate + '%';
+      document.getElementById('neutralRate').textContent = neutralRate + '%';
+      document.getElementById('totalProfit').textContent = stats.totalProfit.toFixed(2) + '€';
+    }
+
+    function buyBooster(type) {
+      let cost;
+      switch (type) {
+        case 'odds':
+          cost = 100;
+          if (balance >= cost) {
+            balance -= cost;
+            boosters.odds++;
+            alert("Booster de cote acheté! Il sera appliqué à votre prochain pari.");
+          } else {
+            alert("Fonds insuffisants pour acheter ce booster.");
+          }
+          break;
+        case 'insurance':
+          cost = 200;
+          if (balance >= cost) {
+            balance -= cost;
+            boosters.insurance++;
+            alert("Assurance pari achetée! Elle sera appliquée à votre prochain pari.");
+          } else {
+            alert("Fonds insuffisants pour acheter cette assurance.");
+          }
+          break;
+      }
+      updateBalance();
+      saveGame();
+    }
+
+    function buyEnterprise(type) {
+      let cost, income;
+      switch (type) {
+        case 'cafe':
+          cost = 100000;
+          income = 500;
+          break;
+        case 'gym':
+          cost = 1000000;
+          income = 10000;
+          break;
+      }
+      if (balance >= cost) {
+        balance -= cost;
+        enterprises[type]++;
+        alert(`Félicitations! Vous avez acheté une nouvelle entreprise. Vous gagnerez ${income}€ supplémentaires par jour.`);
+      } else {
+        alert("Fonds insuffisants pour acheter cette entreprise.");
+      }
+      updateBalance();
+      saveGame();
+    }
+
+    function dailyUpdate() {
+      const now = new Date().getTime();
+      const daysPassed = Math.floor((now - lastDailyUpdate) / (1000 * 60 * 60 * 24));
+      
+      if (daysPassed > 0) {
+        const cafeIncome = enterprises.cafe * 500 * daysPassed;
+        const gymIncome = enterprises.gym * 10000 * daysPassed;
+        const totalIncome = cafeIncome + gymIncome;
+        
+        balance += totalIncome;
+        lastDailyUpdate = now;
+        
+        updateBalance();
+        saveGame();
+        alert(`Revenus journaliers : +${totalIncome}€\nCafé : ${cafeIncome}€\nSalle de Sport : ${gymIncome}€`);
+      }
+    }
+
+    function claimDailyBonus() {
+      const now = new Date().getTime();
+      if (!lastDailyBonusClaim || (now - lastDailyBonusClaim) >= 24 * 60 * 60 * 1000) {
+        balance += 100;
+        lastDailyBonusClaim = now;
+        updateBalance();
+        saveGame();
+        alert("Vous avez reçu votre bonus journalier de 100€!");
+      } else {
+        const timeLeft = 24 * 60 * 60 * 1000 - (now - lastDailyBonusClaim);
+        const hoursLeft = Math.floor(timeLeft / (60 * 60 * 1000));
+        const minutesLeft = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
+        alert(`Vous avez déjà réclamé votre bonus journalier. Revenez dans ${hoursLeft}h ${minutesLeft}m.`);
+      }
+    }
+
+    function saveGame() {
+      const gameData = {
+        sports,
+        pendingBets,
+        balance,
+        stats,
+        boosters,
+        enterprises,
+        lastDailyUpdate,
+        lastDailyBonusClaim
+      };
+      localStorage.setItem('sportsBettingSimData', JSON.stringify(gameData));
+      showAutosaveStatus();
+    }
+
+    function loadGame() {
+      const savedData = localStorage.getItem('sportsBettingSimData');
+      if (savedData) {
+        const gameData = JSON.parse(savedData);
+        sports = gameData.sports;
+        pendingBets = gameData.pendingBets;
+        balance = gameData.balance;
+        stats = gameData.stats;
+        boosters = gameData.boosters;
+        enterprises = gameData.enterprises;
+        lastDailyUpdate = gameData.lastDailyUpdate;
+        lastDailyBonusClaim = gameData.lastDailyBonusClaim;
+
+        initializeSports();
+        updatePendingBets();
+        updateBalance();
+        updateStats();
+      }
+    }
+
+    function showAutosaveStatus() {
+      const status = document.getElementById('autosaveStatus');
+      status.textContent = 'Sauvegarde automatique effectuée';
+      status.style.opacity = '1';
+      setTimeout(() => {
+        status.style.opacity = '0';
+      }, 2000);
+    }
+
+    window.onload = function() {
+      loadGame();
+      initializeSports();
+      updateBalance();
+      updateStats();
+      setInterval(dailyUpdate, 60000);
+      setInterval(saveGame, 60000);  // Autosave every minute
+    };
+  </script>
+</body>
+</html>
