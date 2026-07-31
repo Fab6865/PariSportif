@@ -1,4 +1,6 @@
-<html><head><base href="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTH2EWaq76YUmxodz1J433l6X4P2rS4dfFKA&s%20je%20souhaiterais%20ceux%20ci%20comme%20logo%20de%20mon%20jeux%20merci%20de%20ne%20rien%20modifier%20au%20contenu%20de%20la%20page">
+<!DOCTYPE html>
+<html>
+<head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sports Betting Simulator</title>
@@ -14,14 +16,20 @@
     margin: 0 auto;
     padding: 20px;
   }
-  h1, h2, h3 {
+  h1, h2, h3, h4 {
     text-align: center;
     color: #333;
   }
   .menu {
     display: flex;
     justify-content: space-around;
+    flex-wrap: wrap;
+    gap: 8px;
     margin-bottom: 20px;
+  }
+  .menu button {
+    flex: 1 1 auto;
+    min-width: 100px;
   }
   .menu button {
     padding: 10px 20px;
@@ -35,6 +43,15 @@
   }
   .menu button:hover {
     background-color: #45a049;
+  }
+  .mod-btn {
+    background-color: #333 !important;
+  }
+  .mod-btn:hover {
+    background-color: #111 !important;
+  }
+  .mod-danger {
+    background-color: #f44336;
   }
   .content {
     background-color: white;
@@ -180,6 +197,73 @@
     max-width: 100%;
     height: auto;
   }
+  .coin-choice-group {
+    display: flex;
+    gap: 10px;
+  }
+  .coin-choice {
+    flex: 1;
+    margin-bottom: 0;
+    background-color: #ccc;
+    color: #333;
+  }
+  .coin-choice.selected {
+    background-color: #008CBA;
+    color: white;
+  }
+  .coin-visual-wrap {
+    display: flex;
+    justify-content: center;
+    margin: 15px 0;
+  }
+  .coin {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    background: linear-gradient(145deg, #FFD700, #DAA520);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 30px;
+    font-weight: bold;
+    color: #6b4f00;
+    border: 3px solid #B8860B;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+  }
+  .coin.flipping {
+    animation: coinFlipAnim 0.9s ease-in-out;
+  }
+  @keyframes coinFlipAnim {
+    0%   { transform: rotateY(0deg) scale(1); }
+    25%  { transform: rotateY(360deg) scale(1.15); }
+    50%  { transform: rotateY(720deg) scale(1); }
+    75%  { transform: rotateY(1080deg) scale(1.15); }
+    100% { transform: rotateY(1440deg) scale(1); }
+  }
+  #crashTrack {
+    position: relative;
+    height: 150px;
+    background: linear-gradient(to top, #1a1a2e, #16213e);
+    border-radius: 5px;
+    overflow: hidden;
+    margin: 15px 0;
+  }
+  #crashPlane {
+    position: absolute;
+    left: 5%;
+    bottom: 5%;
+    font-size: 32px;
+    transition: left 0.15s linear, bottom 0.15s linear, transform 0.15s linear;
+  }
+  #crashMultiplierDisplay {
+    position: absolute;
+    top: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 26px;
+    font-weight: bold;
+    color: white;
+  }
 </style>
 </head>
 <body>
@@ -190,23 +274,27 @@
   <div class="container">
     <img id="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTH2EWaq76YUmxodz1J433l6X4P2rS4dfFKA&s" alt="Logo du jeu de paris sportifs" width="200" height="200">
     <h1>Sports Betting Simulator</h1>
-    
+
     <div id="dailyBonus">
       Bonus journalier: <span id="dailyBonusAmount">100</span>€
       <button onclick="claimDailyBonus()">Réclamer</button>
     </div>
-    
+
     <div class="menu">
       <button onclick="showSection('betting')">Parier</button>
       <button onclick="showSection('results')">Résultats</button>
       <button onclick="showSection('stats')">Statistiques</button>
       <button onclick="showSection('shop')">Boutique</button>
+      <button onclick="showSection('casino')">Casino</button>
+      <button onclick="showSection('realestate')">Immobilier</button>
+      <button class="mod-btn" onclick="showSection('modmenu')">Mod Menu</button>
     </div>
-    
+
     <div id="content" class="content">
       <!-- Betting Section -->
       <div id="betting">
         <h2>Placer un pari</h2>
+        <p id="activeBoostersDisplay" style="text-align:center; font-weight:bold; color:#008CBA;">Boosters en stock : <span id="oddsBoosterCount">0</span> Booster(s) de Cote · <span id="insuranceBoosterCount">0</span> Assurance(s) Pari</p>
         <div class="form-group">
           <label for="sport">Sport:</label>
           <select id="sport"></select>
@@ -236,13 +324,13 @@
         </div>
         <button onclick="placeBet()">Placer le pari</button>
       </div>
-      
+
       <!-- Results Section -->
       <div id="results" style="display:none;">
         <h2>Résultats</h2>
         <div id="pendingBets"></div>
       </div>
-      
+
       <!-- Stats Section -->
       <div id="stats" style="display:none;">
         <h2>Statistiques</h2>
@@ -265,20 +353,22 @@
           </div>
         </div>
       </div>
-      
+
       <!-- Shop Section -->
       <div id="shop" style="display:none;">
         <h2>Boutique</h2>
         <div class="shop-item">
           <h3>Booster de Cote</h3>
           <p>Augmente la cote de votre prochain pari de 1.50</p>
-          <p>Prix: 100€</p>
+          <p>Prix: <span id="oddsBoosterPriceDisplay">100</span>€</p>
+          <p>En votre possession : <span id="oddsBoosterOwned">0</span></p>
           <button onclick="buyBooster('odds')">Acheter</button>
         </div>
         <div class="shop-item">
           <h3>Assurance Pari</h3>
           <p>Remboursement en cas de défaite pour votre prochain pari</p>
-          <p>Prix: 200€</p>
+          <p>Prix: <span id="insuranceBoosterPriceDisplay">200</span>€</p>
+          <p>En votre possession : <span id="insuranceBoosterOwned">0</span></p>
           <button onclick="buyBooster('insurance')">Acheter</button>
         </div>
         <div class="shop-item">
@@ -294,11 +384,188 @@
           <button onclick="buyEnterprise('gym')">Acheter</button>
         </div>
       </div>
+
+      <!-- Casino Section -->
+      <div id="casino" style="display:none;">
+        <h2>Casino</h2>
+        <p>Des jeux rapides, séparés des paris sportifs, pour dépenser (ou tenter de multiplier) votre argent.</p>
+        <div class="shop-item">
+          <h3>Pile ou Face (Double ou Rien)</h3>
+          <p>Misez, choisissez Pile ou Face, puis tentez de remporter votre pari.</p>
+          <div class="form-group">
+            <label for="coinFlipStake">Mise (€):</label>
+            <input type="number" id="coinFlipStake" min="1">
+          </div>
+          <div class="form-group">
+            <label>Votre choix :</label>
+            <div class="coin-choice-group">
+              <button type="button" id="choosePile" class="coin-choice selected" onclick="selectCoinSide('pile')">Pile</button>
+              <button type="button" id="chooseFace" class="coin-choice" onclick="selectCoinSide('face')">Face</button>
+            </div>
+          </div>
+          <div class="coin-visual-wrap">
+            <div id="coinVisual" class="coin">P</div>
+          </div>
+          <button onclick="playCoinFlip()">Lancer la pièce</button>
+          <p id="coinFlipResult"></p>
+        </div>
+        <div class="shop-item">
+          <h3>Crash</h3>
+          <p>Le multiplicateur grimpe en continu, l'avion décolle. Retirez votre mise avant qu'il ne s'écrase !</p>
+          <div class="form-group">
+            <label for="crashStake">Mise (€):</label>
+            <input type="number" id="crashStake" min="1">
+          </div>
+          <div id="crashTrack">
+            <div id="crashMultiplierDisplay">1.00x</div>
+            <div id="crashPlane">✈️</div>
+          </div>
+          <div style="display:flex; gap:10px;">
+            <button id="crashStartBtn" onclick="startCrash()" style="margin-bottom:0;">Lancer</button>
+            <button id="crashCashoutBtn" onclick="cashoutCrash()" disabled class="win" style="margin-bottom:0;">Retirer</button>
+          </div>
+          <p id="crashStatus"></p>
+        </div>
+      </div>
+
+      <!-- Real Estate Section -->
+      <div id="realestate" style="display:none;">
+        <h2>Immobilier</h2>
+        <p>Achetez des biens qui prennent de la valeur avec le temps (même hors ligne), puis revendez-les quand vous le voulez.</p>
+        <div class="shop-item">
+          <h3>Studio</h3>
+          <p>Prix: 5 000€ — Valorisation: ~1%/jour</p>
+          <button onclick="buyProperty('studio')">Acheter</button>
+        </div>
+        <div class="shop-item">
+          <h3>Appartement</h3>
+          <p>Prix: 50 000€ — Valorisation: ~1.2%/jour</p>
+          <button onclick="buyProperty('appartement')">Acheter</button>
+        </div>
+        <div class="shop-item">
+          <h3>Villa</h3>
+          <p>Prix: 500 000€ — Valorisation: ~1.5%/jour</p>
+          <button onclick="buyProperty('villa')">Acheter</button>
+        </div>
+        <div class="shop-item">
+          <h3>Hôtel Particulier</h3>
+          <p>Prix: 5 000 000€ — Valorisation: ~1.8%/jour</p>
+          <button onclick="buyProperty('hotel')">Acheter</button>
+        </div>
+        <div class="shop-item">
+          <h3>Immeuble</h3>
+          <p>Prix: 50 000 000€ — Valorisation: ~2%/jour</p>
+          <button onclick="buyProperty('immeuble')">Acheter</button>
+        </div>
+        <h3>Mes biens</h3>
+        <div id="ownedProperties"><p>Vous ne possédez aucun bien immobilier pour le moment.</p></div>
+      </div>
+
+
+      <!-- Mod Menu Section -->
+      <div id="modmenu" style="display:none;">
+        <h2>Mod Menu</h2>
+        <p>Panneau d'édition directe de la sauvegarde : les valeurs actuelles sont pré-remplies, modifiez et cliquez sur "Appliquer".</p>
+
+        <div class="shop-item">
+          <h3>Argent</h3>
+          <div class="form-group">
+            <label for="modBalanceSet">Définir le solde à (€) :</label>
+            <input type="number" id="modBalanceSet" step="0.01">
+          </div>
+          <button onclick="modSetBalance()">Définir le solde</button>
+          <div class="form-group">
+            <label for="modBalanceAdd">Ajouter au solde (négatif pour retirer) :</label>
+            <input type="number" id="modBalanceAdd" step="0.01" value="0">
+          </div>
+          <button onclick="modAddBalance()">Ajouter</button>
+        </div>
+
+        <div class="shop-item">
+          <h3>Entreprises (revenu passif)</h3>
+          <div class="form-group">
+            <label for="modCafeCount">Nombre de Café du Coin (500€/jour chacun) :</label>
+            <input type="number" id="modCafeCount" min="0">
+          </div>
+          <div class="form-group">
+            <label for="modGymCount">Nombre de Salle de Sport (10000€/jour chacune) :</label>
+            <input type="number" id="modGymCount" min="0">
+          </div>
+          <button onclick="modSetEnterprises()">Appliquer</button>
+        </div>
+
+        <div class="shop-item">
+          <h3>Boosters</h3>
+          <div class="form-group">
+            <label for="modOddsBoosters">Boosters de cote en stock :</label>
+            <input type="number" id="modOddsBoosters" min="0">
+          </div>
+          <div class="form-group">
+            <label for="modInsuranceBoosters">Assurances pari en stock :</label>
+            <input type="number" id="modInsuranceBoosters" min="0">
+          </div>
+          <button onclick="modSetBoosters()">Appliquer le stock</button>
+          <div class="form-group">
+            <label for="modOddsBoosterPrice">Prix du Booster de Cote (€) :</label>
+            <input type="number" id="modOddsBoosterPrice" min="0">
+          </div>
+          <div class="form-group">
+            <label for="modInsuranceBoosterPrice">Prix de l'Assurance Pari (€) :</label>
+            <input type="number" id="modInsuranceBoosterPrice" min="0">
+          </div>
+          <button onclick="modSetBoosterPrices()">Appliquer les prix</button>
+        </div>
+
+        <div class="shop-item">
+          <h3>Statistiques des paris</h3>
+          <div class="form-group">
+            <label for="modWins">Paris gagnés :</label>
+            <input type="number" id="modWins" min="0">
+          </div>
+          <div class="form-group">
+            <label for="modLosses">Paris perdus :</label>
+            <input type="number" id="modLosses" min="0">
+          </div>
+          <div class="form-group">
+            <label for="modNeutrals">Paris neutres/remboursés :</label>
+            <input type="number" id="modNeutrals" min="0">
+          </div>
+          <div class="form-group">
+            <label for="modTotalProfit">Profit total affiché (€) :</label>
+            <input type="number" id="modTotalProfit" step="0.01">
+          </div>
+          <button onclick="modSetStats()">Appliquer</button>
+        </div>
+
+        <div class="shop-item">
+          <h3>Bonus journalier</h3>
+          <button onclick="modResetDailyBonus()">Réinitialiser (réclamable immédiatement)</button>
+        </div>
+
+        <div class="shop-item">
+          <h3>Immobilier</h3>
+          <div class="form-group">
+            <label for="modPropertyType">Type de bien à ajouter gratuitement :</label>
+            <select id="modPropertyType">
+              <option value="studio">Studio</option>
+              <option value="appartement">Appartement</option>
+              <option value="villa">Villa</option>
+              <option value="hotel">Hôtel Particulier</option>
+              <option value="immeuble">Immeuble</option>
+            </select>
+          </div>
+          <button onclick="modAddProperty()">Ajouter gratuitement</button>
+          <button class="mod-danger" onclick="modClearProperties()">Supprimer tous mes biens</button>
+        </div>
+
+        <div class="shop-item">
+          <h3>Sauvegarde</h3>
+          <button class="mod-danger" onclick="modResetSave()">Réinitialiser complètement la partie</button>
+        </div>
+      </div>
     </div>
   </div>
-
   <div id="autosaveStatus">Sauvegarde automatique activée</div>
-
   <script>
     let sports = ['Football', 'Basketball', 'Tennis'];
     let pendingBets = [];
@@ -314,32 +581,47 @@
       odds: 0,
       insurance: 0
     };
+    let boosterPrices = {
+      odds: 100,
+      insurance: 200
+    };
     let enterprises = {
       cafe: 0,
       gym: 0
     };
     let lastDailyUpdate = new Date().getTime();
     let lastDailyBonusClaim = null;
-
+    let properties = [];
+    const propertyCatalog = {
+      studio:      { name: 'Studio',            price: 5000,       dailyRate: 0.010 },
+      appartement: { name: 'Appartement',       price: 50000,      dailyRate: 0.012 },
+      villa:       { name: 'Villa',             price: 500000,     dailyRate: 0.015 },
+      hotel:       { name: 'Hôtel Particulier', price: 5000000,    dailyRate: 0.018 },
+      immeuble:    { name: 'Immeuble',          price: 50000000,   dailyRate: 0.020 }
+    };
+    let crashInterval = null;
+    let crashActive = false;
+    let crashMultiplier = 1.0;
+    let crashPoint = 0;
+    let crashStake = 0;
     function initializeSports() {
       const sportSelect = document.getElementById('sport');
       const sportsList = document.getElementById('sportsList');
-      
+
       sportSelect.innerHTML = '';
       sportsList.innerHTML = '';
-      
+
       sports.forEach(sport => {
         const option = document.createElement('option');
         option.value = sport.toLowerCase();
         option.textContent = sport;
         sportSelect.appendChild(option);
-        
+
         const li = document.createElement('li');
         li.innerHTML = `${sport} <button onclick="removeSport('${sport}')">Supprimer</button>`;
         sportsList.appendChild(li);
       });
     }
-
     function addSport() {
       const newSport = document.getElementById('newSport').value.trim();
       if (newSport && !sports.includes(newSport)) {
@@ -351,52 +633,339 @@
         alert('Veuillez entrer un nom de sport valide et unique.');
       }
     }
-
     function removeSport(sport) {
       sports = sports.filter(s => s !== sport);
       initializeSports();
       saveGame();
     }
-
     function showSection(sectionId) {
-      const sections = ['betting', 'results', 'stats', 'shop'];
+      const sections = ['betting', 'results', 'stats', 'shop', 'casino', 'realestate', 'modmenu'];
       sections.forEach(section => {
         document.getElementById(section).style.display = section === sectionId ? 'block' : 'none';
       });
       if (sectionId === 'stats') {
         updateStats();
       }
+      if (sectionId === 'realestate') {
+        updateRealEstateList();
+      }
+      if (sectionId === 'modmenu') {
+        modRefreshPanel();
+      }
     }
 
+    // ----- Mod Menu -----
+    function modSetBalance() {
+      const v = parseFloat(document.getElementById('modBalanceSet').value);
+      if (isNaN(v)) { alert('Entrez un nombre valide.'); return; }
+      balance = v;
+      updateBalance();
+      saveGame();
+      alert(`Solde défini à ${balance.toFixed(2)}€.`);
+    }
+    function modAddBalance() {
+      const v = parseFloat(document.getElementById('modBalanceAdd').value);
+      if (isNaN(v)) { alert('Entrez un nombre valide.'); return; }
+      balance += v;
+      updateBalance();
+      saveGame();
+      modRefreshPanel();
+      alert(`Solde ajusté de ${v >= 0 ? '+' : ''}${v.toFixed(2)}€. Nouveau solde : ${balance.toFixed(2)}€.`);
+    }
+    function modSetEnterprises() {
+      const cafe = parseInt(document.getElementById('modCafeCount').value, 10);
+      const gym = parseInt(document.getElementById('modGymCount').value, 10);
+      if (!isNaN(cafe)) enterprises.cafe = Math.max(0, cafe);
+      if (!isNaN(gym)) enterprises.gym = Math.max(0, gym);
+      updateBalance();
+      saveGame();
+      alert('Entreprises mises à jour.');
+    }
+    function modSetBoosters() {
+      const odds = parseInt(document.getElementById('modOddsBoosters').value, 10);
+      const insurance = parseInt(document.getElementById('modInsuranceBoosters').value, 10);
+      if (!isNaN(odds)) boosters.odds = Math.max(0, odds);
+      if (!isNaN(insurance)) boosters.insurance = Math.max(0, insurance);
+      updateBoosterCountDisplay();
+      saveGame();
+      alert('Boosters mis à jour.');
+    }
+    function modSetBoosterPrices() {
+      const oddsPrice = parseFloat(document.getElementById('modOddsBoosterPrice').value);
+      const insurancePrice = parseFloat(document.getElementById('modInsuranceBoosterPrice').value);
+      if (!isNaN(oddsPrice)) boosterPrices.odds = Math.max(0, oddsPrice);
+      if (!isNaN(insurancePrice)) boosterPrices.insurance = Math.max(0, insurancePrice);
+      updateBoosterPricesDisplay();
+      saveGame();
+      alert('Prix des boosters mis à jour.');
+    }
+    function modSetStats() {
+      const wins = parseInt(document.getElementById('modWins').value, 10);
+      const losses = parseInt(document.getElementById('modLosses').value, 10);
+      const neutrals = parseInt(document.getElementById('modNeutrals').value, 10);
+      const totalProfit = parseFloat(document.getElementById('modTotalProfit').value);
+      if (!isNaN(wins)) stats.wins = Math.max(0, wins);
+      if (!isNaN(losses)) stats.losses = Math.max(0, losses);
+      if (!isNaN(neutrals)) stats.neutrals = Math.max(0, neutrals);
+      if (!isNaN(totalProfit)) stats.totalProfit = totalProfit;
+      stats.totalBets = stats.wins + stats.losses + stats.neutrals;
+      updateStats();
+      saveGame();
+      alert('Statistiques mises à jour.');
+    }
+    function modResetDailyBonus() {
+      lastDailyBonusClaim = null;
+      saveGame();
+      alert('Bonus journalier réinitialisé, vous pouvez le réclamer à nouveau.');
+    }
+    function modAddProperty() {
+      const type = document.getElementById('modPropertyType').value;
+      const info = propertyCatalog[type];
+      properties.push({ type, purchasePrice: info.price, purchaseDate: new Date().getTime() });
+      updateRealEstateList();
+      saveGame();
+      alert(`${info.name} ajouté gratuitement à votre patrimoine.`);
+    }
+    function modClearProperties() {
+      properties = [];
+      updateRealEstateList();
+      saveGame();
+      alert('Tous vos biens immobiliers ont été supprimés.');
+    }
+    function modResetSave() {
+      if (!confirm('Voulez-vous vraiment réinitialiser complètement la partie ? Cette action est irréversible.')) return;
+      localStorage.removeItem('sportsBettingSimData');
+      location.reload();
+    }
+    function modRefreshPanel() {
+      document.getElementById('modBalanceSet').value = balance.toFixed(2);
+      document.getElementById('modCafeCount').value = enterprises.cafe;
+      document.getElementById('modGymCount').value = enterprises.gym;
+      document.getElementById('modOddsBoosters').value = boosters.odds;
+      document.getElementById('modInsuranceBoosters').value = boosters.insurance;
+      document.getElementById('modOddsBoosterPrice').value = boosterPrices.odds;
+      document.getElementById('modInsuranceBoosterPrice').value = boosterPrices.insurance;
+      document.getElementById('modWins').value = stats.wins;
+      document.getElementById('modLosses').value = stats.losses;
+      document.getElementById('modNeutrals').value = stats.neutrals;
+      document.getElementById('modTotalProfit').value = stats.totalProfit.toFixed(2);
+    }
+
+    // ----- Casino: Pile ou Face -----
+    let selectedCoinSide = 'pile';
+    let coinFlipping = false;
+    function selectCoinSide(side) {
+      selectedCoinSide = side;
+      document.getElementById('choosePile').classList.toggle('selected', side === 'pile');
+      document.getElementById('chooseFace').classList.toggle('selected', side === 'face');
+    }
+    function playCoinFlip() {
+      if (coinFlipping) return;
+      const stakeInput = document.getElementById('coinFlipStake');
+      const stake = parseFloat(stakeInput.value);
+      const resultDiv = document.getElementById('coinFlipResult');
+      const coinVisual = document.getElementById('coinVisual');
+      if (!stake || stake <= 0) {
+        alert('Entrez une mise valide.');
+        return;
+      }
+      if (stake > balance) {
+        alert("Vous n'avez pas assez de fonds pour cette mise.");
+        return;
+      }
+      balance -= stake;
+      updateBalance();
+      coinFlipping = true;
+      resultDiv.textContent = 'La pièce tourne...';
+      resultDiv.style.color = '#333';
+      coinVisual.classList.remove('flipping');
+      void coinVisual.offsetWidth; // force le redémarrage de l'animation
+      coinVisual.classList.add('flipping');
+      setTimeout(() => {
+        coinVisual.classList.remove('flipping');
+        // Tirage réellement 50/50 ; la légère marge de la maison est appliquée sur le gain (paiement < x2).
+        const outcome = Math.random() < 0.5 ? 'pile' : 'face';
+        coinVisual.textContent = outcome === 'pile' ? 'P' : 'F';
+        const win = outcome === selectedCoinSide;
+        const outcomeLabel = outcome === 'pile' ? 'Pile' : 'Face';
+        if (win) {
+          const payout = stake * 1.9;
+          balance += payout;
+          resultDiv.textContent = `${outcomeLabel} ! Vous avez gagné ${(payout - stake).toFixed(2)}€.`;
+          resultDiv.style.color = '#4CAF50';
+        } else {
+          resultDiv.textContent = `${outcomeLabel}... Vous avez perdu ${stake.toFixed(2)}€.`;
+          resultDiv.style.color = '#f44336';
+        }
+        updateBalance();
+        saveGame();
+        coinFlipping = false;
+      }, 900);
+    }
+
+    // ----- Casino: Crash -----
+    function resetCrashPlane() {
+      const plane = document.getElementById('crashPlane');
+      if (!plane) return;
+      plane.style.transition = 'none';
+      plane.textContent = '✈️';
+      plane.style.opacity = '1';
+      plane.style.left = '5%';
+      plane.style.bottom = '5%';
+      plane.style.transform = 'rotate(-20deg)';
+      // force reflow puis réactive les transitions pour les prochains mouvements
+      void plane.offsetWidth;
+      plane.style.transition = 'left 0.15s linear, bottom 0.15s linear, transform 0.15s linear';
+    }
+    function updateCrashPlanePosition(mult) {
+      const plane = document.getElementById('crashPlane');
+      if (!plane) return;
+      const progress = Math.min((mult - 1) / 9, 1); // progression visuelle plafonnée vers x10
+      plane.style.left = (5 + progress * 80) + '%';
+      plane.style.bottom = (5 + progress * 80) + '%';
+      plane.style.transform = `rotate(-${20 + progress * 20}deg)`;
+    }
+    function crashPlaneExplode() {
+      const plane = document.getElementById('crashPlane');
+      if (!plane) return;
+      plane.textContent = '💥';
+      plane.style.transition = 'bottom 0.6s ease-in, opacity 0.6s ease-in, transform 0.6s ease-in';
+      plane.style.bottom = '2%';
+      plane.style.opacity = '0.35';
+      plane.style.transform = 'rotate(60deg)';
+    }
+    function startCrash() {
+      if (crashActive) return;
+      const stakeInput = document.getElementById('crashStake');
+      const stake = parseFloat(stakeInput.value);
+      if (!stake || stake <= 0) {
+        alert('Entrez une mise valide.');
+        return;
+      }
+      if (stake > balance) {
+        alert("Vous n'avez pas assez de fonds pour cette mise.");
+        return;
+      }
+      balance -= stake;
+      updateBalance();
+      crashStake = stake;
+      crashActive = true;
+      crashMultiplier = 1.00;
+      const r = Math.random();
+      crashPoint = Math.min(Math.max(1.00, 0.99 / (1 - r)), 50); // marge de la maison + plafond
+      document.getElementById('crashMultiplierDisplay').textContent = crashMultiplier.toFixed(2) + 'x';
+      document.getElementById('crashStartBtn').disabled = true;
+      document.getElementById('crashCashoutBtn').disabled = false;
+      document.getElementById('crashStatus').textContent = 'En cours...';
+      resetCrashPlane();
+      crashInterval = setInterval(() => {
+        crashMultiplier += 0.01 * crashMultiplier + 0.01;
+        if (crashMultiplier >= crashPoint) {
+          clearInterval(crashInterval);
+          crashActive = false;
+          document.getElementById('crashMultiplierDisplay').textContent = crashPoint.toFixed(2) + 'x';
+          document.getElementById('crashStatus').textContent = `Crash à ${crashPoint.toFixed(2)}x ! Vous avez perdu ${crashStake.toFixed(2)}€.`;
+          document.getElementById('crashStartBtn').disabled = false;
+          document.getElementById('crashCashoutBtn').disabled = true;
+          crashPlaneExplode();
+          saveGame();
+        } else {
+          document.getElementById('crashMultiplierDisplay').textContent = crashMultiplier.toFixed(2) + 'x';
+          updateCrashPlanePosition(crashMultiplier);
+        }
+      }, 150);
+    }
+    function cashoutCrash() {
+      if (!crashActive) return;
+      clearInterval(crashInterval);
+      crashActive = false;
+      const winnings = crashStake * crashMultiplier;
+      balance += winnings;
+      document.getElementById('crashStatus').textContent = `Retiré à ${crashMultiplier.toFixed(2)}x ! Vous avez gagné ${(winnings - crashStake).toFixed(2)}€.`;
+      document.getElementById('crashStartBtn').disabled = false;
+      document.getElementById('crashCashoutBtn').disabled = true;
+      updateBalance();
+      saveGame();
+    }
+
+    // ----- Immobilier -----
+    function buyProperty(type) {
+      const info = propertyCatalog[type];
+      if (balance < info.price) {
+        alert('Fonds insuffisants pour acheter ce bien.');
+        return;
+      }
+      balance -= info.price;
+      properties.push({ type, purchasePrice: info.price, purchaseDate: new Date().getTime() });
+      updateBalance();
+      updateRealEstateList();
+      saveGame();
+      alert(`Félicitations, vous avez acheté : ${info.name} !`);
+    }
+    function getPropertyValue(prop) {
+      const info = propertyCatalog[prop.type];
+      const daysOwned = (new Date().getTime() - prop.purchaseDate) / (1000 * 60 * 60 * 24);
+      return prop.purchasePrice * Math.pow(1 + info.dailyRate, daysOwned);
+    }
+    function sellProperty(index) {
+      const prop = properties[index];
+      const value = getPropertyValue(prop);
+      balance += value;
+      properties.splice(index, 1);
+      updateBalance();
+      updateRealEstateList();
+      saveGame();
+      alert(`Bien vendu pour ${value.toFixed(2)}€ !`);
+    }
+    function updateRealEstateList() {
+      const listDiv = document.getElementById('ownedProperties');
+      if (!listDiv) return;
+      if (properties.length === 0) {
+        listDiv.innerHTML = '<p>Vous ne possédez aucun bien immobilier pour le moment.</p>';
+        return;
+      }
+      listDiv.innerHTML = '';
+      properties.forEach((prop, index) => {
+        const info = propertyCatalog[prop.type];
+        const currentValue = getPropertyValue(prop);
+        const gain = currentValue - prop.purchasePrice;
+        const card = document.createElement('div');
+        card.className = 'bet-card';
+        card.innerHTML = `
+          <p><strong>${info.name}</strong></p>
+          <p>Acheté: ${prop.purchasePrice.toLocaleString('fr-FR')}€</p>
+          <p>Valeur actuelle: ${currentValue.toFixed(2)}€ (${gain >= 0 ? '+' : ''}${gain.toFixed(2)}€)</p>
+          <button onclick="sellProperty(${index})">Vendre</button>
+        `;
+        listDiv.appendChild(card);
+      });
+    }
     function placeBet() {
       const sport = document.getElementById('sport').value;
       const bet = document.getElementById('bet').value;
       const betType = document.getElementById('betType').value;
       let odds = parseFloat(document.getElementById('odds').value);
       const stake = parseFloat(document.getElementById('stake').value);
-
       if (bet && betType && odds && stake) {
         if (stake > balance) {
           alert("Vous n'avez pas assez de fonds pour placer ce pari.");
           return;
         }
-
         if (boosters.odds > 0) {
           odds += 1.50;
           boosters.odds--;
           alert("Booster de cote appliqué! La cote a été augmentée de 1.50.");
         }
-
         const newBet = { sport, bet, betType, odds, stake, insured: boosters.insurance > 0 };
         if (newBet.insured) {
           boosters.insurance--;
           alert("Assurance pari appliquée! Vous serez remboursé en cas de défaite.");
         }
-
         pendingBets.push(newBet);
         balance -= stake;
         updatePendingBets();
         updateBalance();
+        updateBoosterCountDisplay();
         saveGame();
         alert(`Pari placé avec succès !\nSport: ${sport}\nPari: ${bet}\nType de mise: ${betType}\nCote: ${odds}\nMise: ${stake}€`);
         document.getElementById('bet').value = '';
@@ -407,7 +976,6 @@
         alert('Veuillez remplir tous les champs avant de placer votre pari.');
       }
     }
-
     function updatePendingBets() {
       const pendingBetsDiv = document.getElementById('pendingBets');
       pendingBetsDiv.innerHTML = '<h3>Paris en attente</h3>';
@@ -430,12 +998,10 @@
         pendingBetsDiv.appendChild(betCard);
       });
     }
-
     function resolveBet(index, result) {
       const bet = pendingBets[index];
       let message = '';
       stats.totalBets++;
-
       switch (result) {
         case 'win':
           const profit = bet.stake * bet.odds - bet.stake;
@@ -460,7 +1026,6 @@
           message = `Le pari a été annulé. Votre mise de ${bet.stake}€ vous a été remboursée.`;
           break;
       }
-
       pendingBets.splice(index, 1);
       updatePendingBets();
       updateBalance();
@@ -468,30 +1033,26 @@
       saveGame();
       alert(message);
     }
-
     function updateBalance() {
       document.getElementById('balanceAmount').textContent = balance.toFixed(2);
       const passiveIncome = enterprises.cafe * 500 + enterprises.gym * 10000;
       document.getElementById('passiveIncome').textContent = passiveIncome.toFixed(2);
     }
-
     function updateStats() {
       const totalBets = stats.wins + stats.losses + stats.neutrals;
       const winRate = totalBets > 0 ? (stats.wins / totalBets * 100).toFixed(2) : 0;
       const lossRate = totalBets > 0 ? (stats.losses / totalBets * 100).toFixed(2) : 0;
       const neutralRate = totalBets > 0 ? (stats.neutrals / totalBets * 100).toFixed(2) : 0;
-
       document.getElementById('winRate').textContent = winRate + '%';
       document.getElementById('lossRate').textContent = lossRate + '%';
       document.getElementById('neutralRate').textContent = neutralRate + '%';
       document.getElementById('totalProfit').textContent = stats.totalProfit.toFixed(2) + '€';
     }
-
     function buyBooster(type) {
       let cost;
       switch (type) {
         case 'odds':
-          cost = 100;
+          cost = boosterPrices.odds;
           if (balance >= cost) {
             balance -= cost;
             boosters.odds++;
@@ -501,7 +1062,7 @@
           }
           break;
         case 'insurance':
-          cost = 200;
+          cost = boosterPrices.insurance;
           if (balance >= cost) {
             balance -= cost;
             boosters.insurance++;
@@ -512,9 +1073,27 @@
           break;
       }
       updateBalance();
+      updateBoosterCountDisplay();
       saveGame();
     }
-
+    function updateBoosterPricesDisplay() {
+      const oddsEl = document.getElementById('oddsBoosterPriceDisplay');
+      const insuranceEl = document.getElementById('insuranceBoosterPriceDisplay');
+      if (oddsEl) oddsEl.textContent = boosterPrices.odds;
+      if (insuranceEl) insuranceEl.textContent = boosterPrices.insurance;
+    }
+    function updateBoosterCountDisplay() {
+      const ids = ['oddsBoosterCount', 'oddsBoosterOwned'];
+      ids.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = boosters.odds;
+      });
+      const insuranceIds = ['insuranceBoosterCount', 'insuranceBoosterOwned'];
+      insuranceIds.forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.textContent = boosters.insurance;
+      });
+    }
     function buyEnterprise(type) {
       let cost, income;
       switch (type) {
@@ -537,25 +1116,52 @@
       updateBalance();
       saveGame();
     }
-
     function dailyUpdate() {
       const now = new Date().getTime();
-      const daysPassed = Math.floor((now - lastDailyUpdate) / (1000 * 60 * 60 * 24));
-      
-      if (daysPassed > 0) {
-        const cafeIncome = enterprises.cafe * 500 * daysPassed;
-        const gymIncome = enterprises.gym * 10000 * daysPassed;
+      // Fraction de journée écoulée (plutôt qu'un compte entier de jours) :
+      // sinon les revenus passifs n'étaient jamais versés tant que le jeu
+      // n'était pas resté ouvert 24h d'affilée.
+      const elapsedDays = (now - lastDailyUpdate) / (1000 * 60 * 60 * 24);
+
+      if (elapsedDays > 0 && (enterprises.cafe > 0 || enterprises.gym > 0)) {
+        const cafeIncome = enterprises.cafe * 500 * elapsedDays;
+        const gymIncome = enterprises.gym * 10000 * elapsedDays;
         const totalIncome = cafeIncome + gymIncome;
-        
+
         balance += totalIncome;
         lastDailyUpdate = now;
-        
+
         updateBalance();
         saveGame();
-        alert(`Revenus journaliers : +${totalIncome}€\nCafé : ${cafeIncome}€\nSalle de Sport : ${gymIncome}€`);
+        showIncomeNotification(totalIncome);
+      } else {
+        lastDailyUpdate = now;
       }
+      updateRealEstateList();
     }
-
+    function showIncomeNotification(amount) {
+      // Petite notification discrète (pas d'alert() qui bloquerait le jeu
+      // toutes les minutes) affichant les revenus passifs perçus.
+      let notif = document.getElementById('incomeNotif');
+      if (!notif) {
+        notif = document.createElement('div');
+        notif.id = 'incomeNotif';
+        notif.style.position = 'fixed';
+        notif.style.bottom = '40px';
+        notif.style.right = '10px';
+        notif.style.backgroundColor = '#4CAF50';
+        notif.style.color = 'white';
+        notif.style.padding = '8px 12px';
+        notif.style.borderRadius = '5px';
+        notif.style.fontSize = '13px';
+        notif.style.transition = 'opacity 0.5s';
+        document.body.appendChild(notif);
+      }
+      notif.textContent = `Revenu passif : +${amount.toFixed(2)}€`;
+      notif.style.opacity = '1';
+      clearTimeout(notif._hideTimeout);
+      notif._hideTimeout = setTimeout(() => { notif.style.opacity = '0'; }, 3000);
+    }
     function claimDailyBonus() {
       const now = new Date().getTime();
       if (!lastDailyBonusClaim || (now - lastDailyBonusClaim) >= 24 * 60 * 60 * 1000) {
@@ -571,7 +1177,6 @@
         alert(`Vous avez déjà réclamé votre bonus journalier. Revenez dans ${hoursLeft}h ${minutesLeft}m.`);
       }
     }
-
     function saveGame() {
       const gameData = {
         sports,
@@ -579,14 +1184,15 @@
         balance,
         stats,
         boosters,
+        boosterPrices,
         enterprises,
         lastDailyUpdate,
-        lastDailyBonusClaim
+        lastDailyBonusClaim,
+        properties
       };
       localStorage.setItem('sportsBettingSimData', JSON.stringify(gameData));
       showAutosaveStatus();
     }
-
     function loadGame() {
       const savedData = localStorage.getItem('sportsBettingSimData');
       if (savedData) {
@@ -596,17 +1202,20 @@
         balance = gameData.balance;
         stats = gameData.stats;
         boosters = gameData.boosters;
+        boosterPrices = gameData.boosterPrices || { odds: 100, insurance: 200 };
         enterprises = gameData.enterprises;
         lastDailyUpdate = gameData.lastDailyUpdate;
         lastDailyBonusClaim = gameData.lastDailyBonusClaim;
-
+        properties = gameData.properties || [];
         initializeSports();
         updatePendingBets();
         updateBalance();
         updateStats();
+        updateRealEstateList();
+        updateBoosterPricesDisplay();
+        updateBoosterCountDisplay();
       }
     }
-
     function showAutosaveStatus() {
       const status = document.getElementById('autosaveStatus');
       status.textContent = 'Sauvegarde automatique effectuée';
@@ -615,12 +1224,14 @@
         status.style.opacity = '0';
       }, 2000);
     }
-
     window.onload = function() {
       loadGame();
       initializeSports();
       updateBalance();
       updateStats();
+      updateBoosterPricesDisplay();
+      updateBoosterCountDisplay();
+      dailyUpdate(); // règle immédiatement les revenus passifs accumulés pendant l'absence
       setInterval(dailyUpdate, 60000);
       setInterval(saveGame, 60000);  // Autosave every minute
     };
