@@ -4,89 +4,239 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Sports Betting Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=JetBrains+Mono:wght@500;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
+  :root {
+    --ink: #0A0D14;
+    --panel: #131826;
+    --panel-raised: #1A2133;
+    --line: #262E44;
+    --frost: #EAF0F6;
+    --mist: #8994AC;
+    --stake: #00E28A;
+    --stake-dim: #00A863;
+    --odds: #F5B700;
+    --loss: #FF5470;
+    --font-display: 'Space Grotesk', sans-serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-body: 'Inter', sans-serif;
+  }
+  * { box-sizing: border-box; }
   body {
-    font-family: Arial, sans-serif;
+    font-family: var(--font-body);
     margin: 0;
     padding: 0;
-    background-color: #f0f0f0;
+    background:
+      radial-gradient(circle at 15% 0%, rgba(0,226,138,0.08), transparent 45%),
+      radial-gradient(circle at 85% 15%, rgba(245,183,0,0.06), transparent 40%),
+      var(--ink);
+    color: var(--frost);
+    min-height: 100vh;
   }
   .container {
     max-width: 800px;
     margin: 0 auto;
-    padding: 20px;
+    padding: 20px 20px 60px;
   }
   h1, h2, h3, h4 {
     text-align: center;
-    color: #333;
+    color: var(--frost);
+    font-family: var(--font-display);
+    letter-spacing: 0.01em;
   }
-  .menu {
+  h1 {
+    font-size: 1.9em;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    margin: 4px 0 2px;
+  }
+  h2 {
+    font-size: 1.15em;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--stake);
+    text-align: left;
+    border-bottom: 1px solid var(--line);
+    padding-bottom: 12px;
+    margin-top: 0;
+  }
+  h3 { font-size: 1em; text-align: left; }
+
+  /* ---- Ticker (signature element) ---- */
+  .ticker {
+    background: var(--panel);
+    border-bottom: 1px solid var(--line);
+    overflow: hidden;
+    white-space: nowrap;
+    padding: 7px 0;
+  }
+  .ticker-track {
+    display: inline-block;
+    padding-left: 100%;
+    font-family: var(--font-mono);
+    font-size: 12px;
+    letter-spacing: 0.08em;
+    color: var(--mist);
+    animation: tickerScroll 26s linear infinite;
+  }
+  .ticker-track span { color: var(--stake); }
+  .ticker-track .odds-hl { color: var(--odds); }
+  @keyframes tickerScroll {
+    0%   { transform: translateX(0); }
+    100% { transform: translateX(-100%); }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ticker-track { animation: none; padding-left: 12px; }
+  }
+
+  .brand {
     display: flex;
-    justify-content: space-around;
-    flex-wrap: wrap;
-    gap: 8px;
-    margin-bottom: 20px;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 22px 0 4px;
   }
+  .brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 10px;
+    background: linear-gradient(150deg, var(--stake), var(--stake-dim));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: var(--font-display);
+    font-weight: 700;
+    font-size: 20px;
+    color: var(--ink);
+    box-shadow: 0 6px 18px rgba(0,226,138,0.25);
+  }
+  .subtitle {
+    text-align: center;
+    color: var(--mist);
+    font-size: 13px;
+    margin: 0 0 18px;
+    letter-spacing: 0.03em;
+  }
+
   .menu button {
     flex: 1 1 auto;
     min-width: 100px;
   }
+  .menu {
+    display: flex;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 22px;
+    background: var(--panel);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 6px;
+  }
+  .menu {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(84px, 1fr));
+    gap: 6px;
+  }
   .menu button {
-    padding: 10px 20px;
-    font-size: 16px;
-    background-color: #4CAF50;
-    color: white;
+    padding: 10px 8px;
+    font-size: 11.5px;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.02em;
+    background-color: transparent;
+    color: var(--mist);
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: background-color 0.2s, color 0.2s;
+    margin-bottom: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
   .menu button:hover {
-    background-color: #45a049;
+    background-color: var(--panel-raised);
+    color: var(--frost);
+  }
+  .menu button.active-tab {
+    background-color: var(--stake);
+    color: var(--ink);
   }
   .mod-btn {
-    background-color: #333 !important;
+    color: var(--loss) !important;
+    border: 1px dashed rgba(255,84,112,0.4) !important;
   }
   .mod-btn:hover {
-    background-color: #111 !important;
+    background-color: rgba(255,84,112,0.12) !important;
+    color: var(--loss) !important;
   }
   .mod-danger {
-    background-color: #f44336;
+    background-color: transparent;
+    border: 1px solid var(--loss) !important;
+    color: var(--loss) !important;
+  }
+  .mod-danger:hover {
+    background-color: rgba(255,84,112,0.12) !important;
   }
   .content {
-    background-color: white;
-    padding: 20px;
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    padding: 22px;
+    border-radius: 14px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.35);
   }
+  #modmenu h2 { color: var(--loss); }
+  #modmenu { font-family: var(--font-mono); }
+  #modmenu p { color: var(--mist); font-size: 13px; }
   .form-group {
     margin-bottom: 15px;
   }
   label {
     display: block;
-    margin-bottom: 5px;
+    margin-bottom: 6px;
+    color: var(--mist);
+    font-size: 13px;
+    letter-spacing: 0.02em;
   }
   input, select {
     width: 100%;
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
+    padding: 10px;
+    background-color: var(--ink);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    color: var(--frost);
+    font-family: var(--font-body);
+    font-size: 14px;
+  }
+  input:focus, select:focus {
+    outline: none;
+    border-color: var(--stake);
+    box-shadow: 0 0 0 3px rgba(0,226,138,0.15);
   }
   button {
     display: block;
     width: 100%;
-    padding: 10px;
-    background-color: #008CBA;
-    color: white;
+    padding: 12px;
+    background-color: var(--stake);
+    color: var(--ink);
     border: none;
-    border-radius: 5px;
-    font-size: 16px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-family: var(--font-display);
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
     cursor: pointer;
-    transition: background-color 0.3s;
+    transition: filter 0.2s, transform 0.05s;
     margin-bottom: 10px;
   }
   button:hover {
-    background-color: #007B9A;
+    filter: brightness(1.1);
+  }
+  button:active {
+    transform: scale(0.98);
   }
   #sportsList {
     list-style-type: none;
@@ -96,107 +246,167 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 5px 0;
+    padding: 9px 12px;
+    background: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 14px;
   }
   #sportsList li button {
     width: auto;
-    padding: 5px 10px;
-    background-color: #f44336;
+    padding: 5px 12px;
+    background-color: transparent;
+    border: 1px solid var(--loss);
+    color: var(--loss);
+    font-size: 11px;
+    margin-bottom: 0;
   }
   #pendingBets {
     margin-top: 20px;
   }
   .bet-card {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 10px;
+    background-color: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--stake);
+    border-radius: 8px;
+    padding: 14px;
     margin-bottom: 10px;
   }
+  .bet-card p { margin: 4px 0; font-size: 14px; color: var(--mist); }
+  .bet-card p strong { color: var(--frost); }
   .result-buttons {
     display: flex;
     justify-content: space-between;
+    gap: 8px;
     margin-top: 10px;
   }
   .result-buttons button {
     width: 30%;
     padding: 8px;
-    font-size: 14px;
+    font-size: 12px;
+    margin-bottom: 0;
   }
-  .win { background-color: #4CAF50; }
-  .lose { background-color: #f44336; }
-  .neutral { background-color: #ff9800; }
+  .win { background-color: var(--stake); color: var(--ink); }
+  .lose { background-color: var(--loss); color: var(--ink); }
+  .neutral { background-color: var(--odds); color: var(--ink); }
   .stats-container {
     display: flex;
     justify-content: space-around;
     flex-wrap: wrap;
+    gap: 12px;
   }
   .stat-box {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
-    margin: 10px;
+    background-color: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 16px;
     text-align: center;
-    width: calc(50% - 20px);
+    flex: 1 1 calc(50% - 20px);
   }
+  .stat-box h3 { text-align: center; color: var(--mist); font-size: 12px; text-transform: uppercase; letter-spacing: 0.05em; font-family: var(--font-body); font-weight: 500; }
   .stat-value {
-    font-size: 24px;
-    font-weight: bold;
-    margin: 10px 0;
+    font-size: 26px;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    margin: 8px 0 0;
+    color: var(--stake);
   }
   #balanceInfo {
     position: fixed;
-    top: 10px;
-    right: 10px;
-    background-color: #4CAF50;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
-    font-weight: bold;
+    top: 12px;
+    right: 12px;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--frost);
+    padding: 10px 14px;
+    border-radius: 10px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    z-index: 50;
   }
+  #balanceInfo div:first-child { color: var(--stake); font-weight: 700; font-size: 15px; }
+  #balanceInfo div:last-child { color: var(--mist); font-size: 11px; margin-top: 2px; }
   .shop-item {
-    background-color: #f9f9f9;
-    border: 1px solid #ddd;
-    border-radius: 5px;
-    padding: 15px;
+    background-color: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--odds);
+    border-radius: 10px;
+    padding: 16px;
     margin-bottom: 15px;
   }
+  #modmenu .shop-item { border-left-color: var(--loss); }
   .shop-item h3 {
     margin-top: 0;
+    font-family: var(--font-display);
+    letter-spacing: 0.02em;
   }
   .shop-item p {
     margin-bottom: 10px;
+    color: var(--mist);
+    font-size: 13px;
   }
   .shop-item button {
     width: auto;
-    padding: 8px 15px;
+    padding: 9px 16px;
   }
   #dailyBonus {
-    background-color: #FFA500;
-    color: white;
-    padding: 10px;
-    border-radius: 5px;
+    background: linear-gradient(120deg, var(--odds), #ffce4d);
+    color: var(--ink);
+    padding: 13px 16px;
+    border-radius: 10px;
     text-align: center;
     margin-bottom: 20px;
-    font-weight: bold;
+    font-weight: 700;
+    font-family: var(--font-display);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    flex-wrap: wrap;
+  }
+  #dailyBonus button {
+    width: auto;
+    background-color: var(--ink);
+    color: var(--odds);
+    padding: 8px 16px;
+    margin-bottom: 0;
   }
   #autosaveStatus {
     position: fixed;
     bottom: 10px;
     right: 10px;
-    background-color: #008CBA;
-    color: white;
-    padding: 5px 10px;
-    border-radius: 5px;
-    font-size: 12px;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--mist);
+    padding: 6px 12px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-family: var(--font-mono);
+    opacity: 0;
+    transition: opacity 0.4s;
   }
-  #logo {
-    display: block;
-    margin: 0 auto 20px;
-    max-width: 100%;
-    height: auto;
+  #soundToggle {
+    position: fixed;
+    top: 12px;
+    left: 12px;
+    width: auto;
+    background-color: var(--panel);
+    border: 1px solid var(--line);
+    color: var(--frost);
+    padding: 9px 11px;
+    border-radius: 10px;
+    font-size: 15px;
+    box-shadow: 0 8px 20px rgba(0,0,0,0.4);
+    z-index: 50;
+    margin: 0;
+    cursor: pointer;
   }
+  #soundToggle:hover {
+    filter: brightness(1.15);
+  }
+  #logo { display: none; }
   .coin-choice-group {
     display: flex;
     gap: 10px;
@@ -204,31 +414,34 @@
   .coin-choice {
     flex: 1;
     margin-bottom: 0;
-    background-color: #ccc;
-    color: #333;
+    background-color: var(--ink);
+    border: 1px solid var(--line);
+    color: var(--mist);
   }
   .coin-choice.selected {
-    background-color: #008CBA;
-    color: white;
+    background-color: var(--odds);
+    color: var(--ink);
+    border-color: var(--odds);
   }
   .coin-visual-wrap {
     display: flex;
     justify-content: center;
-    margin: 15px 0;
+    margin: 18px 0;
   }
   .coin {
-    width: 80px;
-    height: 80px;
+    width: 84px;
+    height: 84px;
     border-radius: 50%;
-    background: linear-gradient(145deg, #FFD700, #DAA520);
+    background: linear-gradient(145deg, #FFE082, var(--odds));
     display: flex;
     align-items: center;
     justify-content: center;
     font-size: 30px;
-    font-weight: bold;
-    color: #6b4f00;
-    border: 3px solid #B8860B;
-    box-shadow: 0 3px 6px rgba(0,0,0,0.3);
+    font-family: var(--font-display);
+    font-weight: 700;
+    color: #4a3800;
+    border: 3px solid #C99400;
+    box-shadow: 0 6px 16px rgba(245,183,0,0.3);
   }
   .coin.flipping {
     animation: coinFlipAnim 0.9s ease-in-out;
@@ -243,8 +456,11 @@
   #crashTrack {
     position: relative;
     height: 150px;
-    background: linear-gradient(to top, #1a1a2e, #16213e);
-    border-radius: 5px;
+    background:
+      linear-gradient(0deg, rgba(0,226,138,0.05) 1px, transparent 1px) 0 0 / 100% 20px,
+      linear-gradient(to top, #0d1220, #171f34);
+    border: 1px solid var(--line);
+    border-radius: 8px;
     overflow: hidden;
     margin: 15px 0;
   }
@@ -254,6 +470,7 @@
     bottom: 5%;
     font-size: 32px;
     transition: left 0.15s linear, bottom 0.15s linear, transform 0.15s linear;
+    filter: drop-shadow(0 0 6px rgba(245,183,0,0.5));
   }
   #crashMultiplierDisplay {
     position: absolute;
@@ -261,40 +478,279 @@
     left: 50%;
     transform: translateX(-50%);
     font-size: 26px;
-    font-weight: bold;
-    color: white;
+    font-weight: 700;
+    font-family: var(--font-mono);
+    color: var(--odds);
+  }
+
+  /* ---- Page d'accueil ---- */
+  .home-intro {
+    color: var(--mist);
+    margin: -8px 0 18px;
+    font-size: 13.5px;
+  }
+  .home-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+  }
+  @media (max-width: 480px) {
+    .home-grid { grid-template-columns: 1fr; }
+  }
+  .home-card {
+    background-color: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--stake);
+    border-radius: 10px;
+    padding: 18px;
+    cursor: pointer;
+    transition: transform 0.15s, border-color 0.15s, background-color 0.15s;
+  }
+  .home-card:hover {
+    transform: translateY(-2px);
+    border-color: var(--stake);
+    background-color: #1E2740;
+  }
+  .home-card.casino-card, .home-card.shop-card { border-left-color: var(--odds); }
+  .home-card.mod-card { border-left-color: var(--loss); }
+  .home-card-icon { font-size: 26px; margin-bottom: 6px; }
+  .home-card h3 { margin: 2px 0 4px; }
+  .home-card p { margin: 0; color: var(--mist); font-size: 12.5px; }
+
+  /* ---- Lien retour (dans chaque page) ---- */
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    width: auto;
+    background: none;
+    border: none;
+    color: var(--mist);
+    font-family: var(--font-body);
+    font-size: 13px;
+    font-weight: 500;
+    text-transform: none;
+    letter-spacing: 0;
+    padding: 0;
+    margin: 0 0 14px;
+    cursor: pointer;
+  }
+  .back-link:hover {
+    color: var(--stake);
+    filter: none;
+    text-decoration: underline;
+  }
+
+  /* ---- Portefeuille immobilier (regroupé par type) ---- */
+  .property-group {
+    background-color: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-left: 3px solid var(--stake);
+    border-radius: 10px;
+    padding: 14px 14px 6px;
+    margin-bottom: 12px;
+  }
+  .property-group-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+  .property-group-header strong {
+    font-family: var(--font-display);
+    font-size: 15px;
+    letter-spacing: 0.02em;
+  }
+  .qty-badge {
+    background-color: var(--stake);
+    color: var(--ink);
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 12px;
+    padding: 2px 9px;
+    border-radius: 20px;
+    white-space: nowrap;
+  }
+  .property-group-summary {
+    color: var(--mist);
+    font-size: 12.5px;
+    margin: 4px 0 10px;
+    font-family: var(--font-mono);
+  }
+  .property-unit {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    padding: 9px 0;
+    border-top: 1px solid var(--line);
+    font-size: 13px;
+  }
+  .property-unit .unit-info p {
+    margin: 0;
+    color: var(--mist);
+    font-size: 12.5px;
+  }
+  .property-unit .unit-info .unit-value {
+    color: var(--frost);
+    font-family: var(--font-mono);
+  }
+  .property-unit button {
+    width: auto;
+    padding: 7px 14px;
+    font-size: 11px;
+    margin-bottom: 0;
+    flex-shrink: 0;
+  }
+  .portfolio-total {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin-bottom: 16px;
+  }
+  .portfolio-total span:first-child {
+    color: var(--mist);
+    font-size: 13px;
+  }
+  .portfolio-total span:last-child {
+    font-family: var(--font-mono);
+    font-weight: 700;
+    font-size: 18px;
+    color: var(--stake);
+  }
+
+  /* ---- Cases à cocher boosters (page Parier) ---- */
+  .booster-check {
+    background-color: var(--panel-raised);
+    border: 1px solid var(--line);
+    border-radius: 8px;
+    padding: 12px 14px;
+  }
+  .checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0;
+    color: var(--frost);
+    font-size: 13.5px;
+    cursor: pointer;
+  }
+  .checkbox-label input[type="checkbox"] {
+    width: 18px;
+    height: 18px;
+    accent-color: var(--stake);
+    cursor: pointer;
+    flex-shrink: 0;
+  }
+  .checkbox-label input[type="checkbox"]:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+  .checkbox-label:has(input:disabled) {
+    color: var(--mist);
+    cursor: not-allowed;
   }
 </style>
 </head>
 <body>
+  <button id="soundToggle" onclick="toggleSound()" title="Activer/couper le son">🔊</button>
+  <div class="ticker">
+    <div class="ticker-track">
+      🏟️ PSG <span class="odds-hl">1.85</span> · Marseille <span class="odds-hl">3.40</span> &nbsp;&nbsp;|&nbsp;&nbsp; 🏀 Lakers <span class="odds-hl">2.10</span> · Celtics <span class="odds-hl">1.70</span> &nbsp;&nbsp;|&nbsp;&nbsp; 🎾 Alcaraz <span class="odds-hl">1.55</span> · Sinner <span class="odds-hl">2.45</span> &nbsp;&nbsp;|&nbsp;&nbsp; <span>Bonus journalier disponible</span> &nbsp;&nbsp;|&nbsp;&nbsp; 🎰 Table Crash ouverte &nbsp;&nbsp;|&nbsp;&nbsp;
+    </div>
+  </div>
   <div id="balanceInfo">
-    <div>Solde: <span id="balanceAmount">1000</span>€</div>
-    <div>Revenu passif: <span id="passiveIncome">0</span>€/jour</div>
+    <div>💰 <span id="balanceAmount">1000</span>€</div>
+    <div>+<span id="passiveIncome">0</span>€/j passif</div>
   </div>
   <div class="container">
     <img id="logo" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQTH2EWaq76YUmxodz1J433l6X4P2rS4dfFKA&s" alt="Logo du jeu de paris sportifs" width="200" height="200">
-    <h1>Sports Betting Simulator</h1>
+    <div class="brand">
+      <div class="brand-mark">SB</div>
+      <h1>Sports Betting Simulator</h1>
+    </div>
+    <p class="subtitle">Cotes, casino &amp; patrimoine — tout en monnaie virtuelle</p>
 
     <div id="dailyBonus">
-      Bonus journalier: <span id="dailyBonusAmount">100</span>€
+      🎁 Bonus journalier : récompense surprise
       <button onclick="claimDailyBonus()">Réclamer</button>
     </div>
 
     <div class="menu">
-      <button onclick="showSection('betting')">Parier</button>
-      <button onclick="showSection('results')">Résultats</button>
-      <button onclick="showSection('stats')">Statistiques</button>
-      <button onclick="showSection('shop')">Boutique</button>
-      <button onclick="showSection('casino')">Casino</button>
-      <button onclick="showSection('realestate')">Immobilier</button>
-      <button class="mod-btn" onclick="showSection('modmenu')">Mod Menu</button>
+      <button class="active-tab" data-section="accueil" onclick="showSection('accueil')">🏠 Accueil</button>
+      <button data-section="betting" onclick="showSection('betting')">🏈 Parier</button>
+      <button data-section="results" onclick="showSection('results')">📋 Résultats</button>
+      <button data-section="stats" onclick="showSection('stats')">📊 Stats</button>
+      <button data-section="shop" onclick="showSection('shop')">🛒 Boutique</button>
+      <button data-section="casino" onclick="showSection('casino')">🎰 Casino</button>
+      <button data-section="realestate" onclick="showSection('realestate')">🏡 Immobilier</button>
+      <button class="mod-btn" data-section="modmenu" onclick="showSection('modmenu')">⚙ Mod Menu</button>
     </div>
 
     <div id="content" class="content">
+      <!-- Accueil -->
+      <div id="accueil">
+        <h2>🏠 Accueil</h2>
+        <p class="home-intro">Choisissez une page pour commencer.</p>
+        <div class="home-grid">
+          <div class="home-card" onclick="showSection('betting')">
+            <div class="home-card-icon">🏈</div>
+            <h3>Parier</h3>
+            <p>Placer un nouveau pari sportif</p>
+          </div>
+          <div class="home-card" onclick="showSection('results')">
+            <div class="home-card-icon">📋</div>
+            <h3>Résultats</h3>
+            <p>Vos paris en attente à résoudre</p>
+          </div>
+          <div class="home-card" onclick="showSection('stats')">
+            <div class="home-card-icon">📊</div>
+            <h3>Statistiques</h3>
+            <p>Taux de réussite et profit total</p>
+          </div>
+          <div class="home-card shop-card" onclick="showSection('shop')">
+            <div class="home-card-icon">🛒</div>
+            <h3>Boutique</h3>
+            <p>Boosters, assurances, entreprises</p>
+          </div>
+          <div class="home-card casino-card" onclick="showSection('casino')">
+            <div class="home-card-icon">🎰</div>
+            <h3>Casino</h3>
+            <p>Pile ou Face, Crash</p>
+          </div>
+          <div class="home-card" onclick="showSection('realestate')">
+            <div class="home-card-icon">🏡</div>
+            <h3>Immobilier</h3>
+            <p>Acheter et revendre des biens</p>
+          </div>
+          <div class="home-card mod-card" onclick="showSection('modmenu')">
+            <div class="home-card-icon">⚙</div>
+            <h3>Mod Menu</h3>
+            <p>Édition directe de la sauvegarde</p>
+          </div>
+        </div>
+      </div>
+
       <!-- Betting Section -->
-      <div id="betting">
-        <h2>Placer un pari</h2>
-        <p id="activeBoostersDisplay" style="text-align:center; font-weight:bold; color:#008CBA;">Boosters en stock : <span id="oddsBoosterCount">0</span> Booster(s) de Cote · <span id="insuranceBoosterCount">0</span> Assurance(s) Pari</p>
+      <div id="betting" style="display:none;">
+        <button class="back-link" onclick="showSection('accueil')">← Accueil</button>
+        <h2>🏈 Placer un pari</h2>
+        <div class="form-group booster-check">
+          <label class="checkbox-label">
+            <input type="checkbox" id="useOddsBooster">
+            Appliquer un Booster de Cote (<span id="oddsBoosterCount">0</span> en stock, +1.50 à la cote)
+          </label>
+        </div>
+        <div class="form-group booster-check">
+          <label class="checkbox-label">
+            <input type="checkbox" id="useInsuranceBooster">
+            Appliquer une Assurance Pari (<span id="insuranceBoosterCount">0</span> en stock, remboursée si perdu)
+          </label>
+        </div>
         <div class="form-group">
           <label for="sport">Sport:</label>
           <select id="sport"></select>
@@ -327,13 +783,15 @@
 
       <!-- Results Section -->
       <div id="results" style="display:none;">
-        <h2>Résultats</h2>
+        <button class="back-link" onclick="showSection('accueil')">← Accueil</button>
+        <h2>📋 Résultats</h2>
         <div id="pendingBets"></div>
       </div>
 
       <!-- Stats Section -->
       <div id="stats" style="display:none;">
-        <h2>Statistiques</h2>
+        <button class="back-link" onclick="showSection('accueil')">← Accueil</button>
+        <h2>📊 Statistiques</h2>
         <div class="stats-container">
           <div class="stat-box">
             <h3>Taux de réussite</h3>
@@ -356,29 +814,30 @@
 
       <!-- Shop Section -->
       <div id="shop" style="display:none;">
-        <h2>Boutique</h2>
+        <button class="back-link" onclick="showSection('accueil')">← Accueil</button>
+        <h2>🛒 Boutique</h2>
         <div class="shop-item">
-          <h3>Booster de Cote</h3>
-          <p>Augmente la cote de votre prochain pari de 1.50</p>
+          <h3>⚡ Booster de Cote</h3>
+          <p>Augmente la cote d'un pari de 1.50 (à cocher sur la page Parier)</p>
           <p>Prix: <span id="oddsBoosterPriceDisplay">100</span>€</p>
           <p>En votre possession : <span id="oddsBoosterOwned">0</span></p>
           <button onclick="buyBooster('odds')">Acheter</button>
         </div>
         <div class="shop-item">
-          <h3>Assurance Pari</h3>
-          <p>Remboursement en cas de défaite pour votre prochain pari</p>
+          <h3>🛡️ Assurance Pari</h3>
+          <p>Remboursement en cas de défaite (à cocher sur la page Parier)</p>
           <p>Prix: <span id="insuranceBoosterPriceDisplay">200</span>€</p>
           <p>En votre possession : <span id="insuranceBoosterOwned">0</span></p>
           <button onclick="buyBooster('insurance')">Acheter</button>
         </div>
         <div class="shop-item">
-          <h3>Entreprise: Café du Coin</h3>
+          <h3>☕ Entreprise: Café du Coin</h3>
           <p>Gagnez 500€ par jour</p>
           <p>Prix: 100000€</p>
           <button onclick="buyEnterprise('cafe')">Acheter</button>
         </div>
         <div class="shop-item">
-          <h3>Entreprise: Salle de Sport</h3>
+          <h3>💪 Entreprise: Salle de Sport</h3>
           <p>Gagnez 10000€ par jour</p>
           <p>Prix: 1000000€</p>
           <button onclick="buyEnterprise('gym')">Acheter</button>
@@ -387,10 +846,11 @@
 
       <!-- Casino Section -->
       <div id="casino" style="display:none;">
-        <h2>Casino</h2>
+        <button class="back-link" onclick="showSection('accueil')">← Accueil</button>
+        <h2>🎰 Casino</h2>
         <p>Des jeux rapides, séparés des paris sportifs, pour dépenser (ou tenter de multiplier) votre argent.</p>
         <div class="shop-item">
-          <h3>Pile ou Face (Double ou Rien)</h3>
+          <h3>🪙 Pile ou Face (Double ou Rien)</h3>
           <p>Misez, choisissez Pile ou Face, puis tentez de remporter votre pari.</p>
           <div class="form-group">
             <label for="coinFlipStake">Mise (€):</label>
@@ -410,7 +870,7 @@
           <p id="coinFlipResult"></p>
         </div>
         <div class="shop-item">
-          <h3>Crash</h3>
+          <h3>✈️ Crash</h3>
           <p>Le multiplicateur grimpe en continu, l'avion décolle. Retirez votre mise avant qu'il ne s'écrase !</p>
           <div class="form-group">
             <label for="crashStake">Mise (€):</label>
@@ -430,7 +890,8 @@
 
       <!-- Real Estate Section -->
       <div id="realestate" style="display:none;">
-        <h2>Immobilier</h2>
+        <button class="back-link" onclick="showSection('accueil')">← Accueil</button>
+        <h2>🏡 Immobilier</h2>
         <p>Achetez des biens qui prennent de la valeur avec le temps (même hors ligne), puis revendez-les quand vous le voulez.</p>
         <div class="shop-item">
           <h3>Studio</h3>
@@ -464,7 +925,8 @@
 
       <!-- Mod Menu Section -->
       <div id="modmenu" style="display:none;">
-        <h2>Mod Menu</h2>
+        <button class="back-link" onclick="showSection('accueil')">← Accueil</button>
+        <h2>⚙ Mod Menu</h2>
         <p>Panneau d'édition directe de la sauvegarde : les valeurs actuelles sont pré-remplies, modifiez et cliquez sur "Appliquer".</p>
 
         <div class="shop-item">
@@ -567,6 +1029,62 @@
   </div>
   <div id="autosaveStatus">Sauvegarde automatique activée</div>
   <script>
+    // ===== Moteur audio (sons synthétisés, aucun fichier externe) =====
+    let soundEnabled = true;
+    let audioCtx = null;
+    function getAudioCtx() {
+      if (!audioCtx) {
+        const AC = window.AudioContext || window.webkitAudioContext;
+        if (!AC) return null;
+        audioCtx = new AC();
+      }
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      return audioCtx;
+    }
+    function playTone(freq, duration, type, volume, delay) {
+      if (!soundEnabled) return;
+      type = type || 'sine';
+      volume = volume === undefined ? 0.15 : volume;
+      delay = delay || 0;
+      try {
+        const ctx = getAudioCtx();
+        if (!ctx) return;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type;
+        osc.frequency.value = freq;
+        const t0 = ctx.currentTime + delay;
+        gain.gain.setValueAtTime(0.0001, t0);
+        gain.gain.linearRampToValueAtTime(volume, t0 + 0.012);
+        gain.gain.exponentialRampToValueAtTime(0.0001, t0 + duration);
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(t0);
+        osc.stop(t0 + duration + 0.03);
+      } catch (e) { /* audio indisponible, on ignore silencieusement */ }
+    }
+    const sfx = {
+      click: () => playTone(500, 0.05, 'square', 0.05),
+      confirm: () => { playTone(520, 0.09, 'sine', 0.14); playTone(780, 0.12, 'sine', 0.12, 0.08); },
+      win: () => { playTone(523.25, 0.12, 'triangle', 0.16); playTone(659.25, 0.12, 'triangle', 0.16, 0.1); playTone(783.99, 0.2, 'triangle', 0.18, 0.2); },
+      lose: () => { playTone(220, 0.25, 'sawtooth', 0.12); playTone(160, 0.32, 'sawtooth', 0.12, 0.12); },
+      neutral: () => playTone(392, 0.16, 'sine', 0.1),
+      denied: () => playTone(180, 0.16, 'square', 0.1),
+      coinFlip: () => { for (let i = 0; i < 4; i++) playTone(600 + i * 80, 0.05, 'square', 0.07, i * 0.07); },
+      purchase: () => { playTone(700, 0.06, 'sine', 0.13); playTone(950, 0.08, 'sine', 0.11, 0.06); },
+      bonus: () => { [523.25, 659.25, 783.99, 1046.5].forEach((f, i) => playTone(f, 0.15, 'triangle', 0.15, i * 0.09)); },
+      cashout: () => { playTone(880, 0.1, 'triangle', 0.16); playTone(1174.66, 0.15, 'triangle', 0.16, 0.08); },
+      explosion: () => { playTone(90, 0.4, 'sawtooth', 0.22); playTone(60, 0.5, 'sawtooth', 0.18, 0.05); },
+      sell: () => { playTone(660, 0.08, 'sine', 0.13); playTone(880, 0.1, 'sine', 0.11, 0.07); },
+      mod: () => playTone(1200, 0.04, 'square', 0.05)
+    };
+    function toggleSound() {
+      soundEnabled = !soundEnabled;
+      const btn = document.getElementById('soundToggle');
+      if (btn) btn.textContent = soundEnabled ? '🔊' : '🔇';
+      if (soundEnabled) sfx.click();
+    }
+
     let sports = ['Football', 'Basketball', 'Tennis'];
     let pendingBets = [];
     let balance = 1000;
@@ -582,8 +1100,8 @@
       insurance: 0
     };
     let boosterPrices = {
-      odds: 100,
-      insurance: 200
+      odds: 150,
+      insurance: 300
     };
     let enterprises = {
       cafe: 0,
@@ -638,11 +1156,22 @@
       initializeSports();
       saveGame();
     }
-    function showSection(sectionId) {
-      const sections = ['betting', 'results', 'stats', 'shop', 'casino', 'realestate', 'modmenu'];
-      sections.forEach(section => {
+    const allSections = ['accueil', 'betting', 'results', 'stats', 'shop', 'casino', 'realestate', 'modmenu'];
+    function showSection(sectionId, skipHashUpdate) {
+      if (!allSections.includes(sectionId)) sectionId = 'accueil';
+      sfx.click();
+      allSections.forEach(section => {
         document.getElementById(section).style.display = section === sectionId ? 'block' : 'none';
       });
+      document.querySelectorAll('.menu button[data-section]').forEach(btn => {
+        btn.classList.toggle('active-tab', btn.dataset.section === sectionId);
+      });
+      if (!skipHashUpdate && location.hash !== '#' + sectionId) {
+        location.hash = sectionId;
+      }
+      if (sectionId === 'betting') {
+        updateBoosterCountDisplay();
+      }
       if (sectionId === 'stats') {
         updateStats();
       }
@@ -652,13 +1181,23 @@
       if (sectionId === 'modmenu') {
         modRefreshPanel();
       }
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+    window.addEventListener('hashchange', () => {
+      const target = location.hash.replace('#', '') || 'accueil';
+      const alreadyActive = document.querySelector('.menu button.active-tab');
+      // Évite de rejouer showSection() (et donc le son + le scroll) quand le hash
+      // vient d'être mis à jour par showSection() lui-même sur la même page.
+      if (alreadyActive && alreadyActive.dataset.section === target) return;
+      showSection(target, true);
+    });
 
     // ----- Mod Menu -----
     function modSetBalance() {
       const v = parseFloat(document.getElementById('modBalanceSet').value);
       if (isNaN(v)) { alert('Entrez un nombre valide.'); return; }
       balance = v;
+      sfx.mod();
       updateBalance();
       saveGame();
       alert(`Solde défini à ${balance.toFixed(2)}€.`);
@@ -667,6 +1206,7 @@
       const v = parseFloat(document.getElementById('modBalanceAdd').value);
       if (isNaN(v)) { alert('Entrez un nombre valide.'); return; }
       balance += v;
+      sfx.mod();
       updateBalance();
       saveGame();
       modRefreshPanel();
@@ -677,6 +1217,7 @@
       const gym = parseInt(document.getElementById('modGymCount').value, 10);
       if (!isNaN(cafe)) enterprises.cafe = Math.max(0, cafe);
       if (!isNaN(gym)) enterprises.gym = Math.max(0, gym);
+      sfx.mod();
       updateBalance();
       saveGame();
       alert('Entreprises mises à jour.');
@@ -686,6 +1227,7 @@
       const insurance = parseInt(document.getElementById('modInsuranceBoosters').value, 10);
       if (!isNaN(odds)) boosters.odds = Math.max(0, odds);
       if (!isNaN(insurance)) boosters.insurance = Math.max(0, insurance);
+      sfx.mod();
       updateBoosterCountDisplay();
       saveGame();
       alert('Boosters mis à jour.');
@@ -695,6 +1237,7 @@
       const insurancePrice = parseFloat(document.getElementById('modInsuranceBoosterPrice').value);
       if (!isNaN(oddsPrice)) boosterPrices.odds = Math.max(0, oddsPrice);
       if (!isNaN(insurancePrice)) boosterPrices.insurance = Math.max(0, insurancePrice);
+      sfx.mod();
       updateBoosterPricesDisplay();
       saveGame();
       alert('Prix des boosters mis à jour.');
@@ -709,12 +1252,14 @@
       if (!isNaN(neutrals)) stats.neutrals = Math.max(0, neutrals);
       if (!isNaN(totalProfit)) stats.totalProfit = totalProfit;
       stats.totalBets = stats.wins + stats.losses + stats.neutrals;
+      sfx.mod();
       updateStats();
       saveGame();
       alert('Statistiques mises à jour.');
     }
     function modResetDailyBonus() {
       lastDailyBonusClaim = null;
+      sfx.mod();
       saveGame();
       alert('Bonus journalier réinitialisé, vous pouvez le réclamer à nouveau.');
     }
@@ -722,20 +1267,23 @@
       const type = document.getElementById('modPropertyType').value;
       const info = propertyCatalog[type];
       properties.push({ type, purchasePrice: info.price, purchaseDate: new Date().getTime() });
+      sfx.mod();
       updateRealEstateList();
       saveGame();
       alert(`${info.name} ajouté gratuitement à votre patrimoine.`);
     }
     function modClearProperties() {
       properties = [];
+      sfx.lose();
       updateRealEstateList();
       saveGame();
       alert('Tous vos biens immobiliers ont été supprimés.');
     }
     function modResetSave() {
       if (!confirm('Voulez-vous vraiment réinitialiser complètement la partie ? Cette action est irréversible.')) return;
+      sfx.explosion();
       localStorage.removeItem('sportsBettingSimData');
-      location.reload();
+      setTimeout(() => location.reload(), 300);
     }
     function modRefreshPanel() {
       document.getElementById('modBalanceSet').value = balance.toFixed(2);
@@ -776,6 +1324,7 @@
       balance -= stake;
       updateBalance();
       coinFlipping = true;
+      sfx.coinFlip();
       resultDiv.textContent = 'La pièce tourne...';
       resultDiv.style.color = '#333';
       coinVisual.classList.remove('flipping');
@@ -791,9 +1340,11 @@
         if (win) {
           const payout = stake * 1.9;
           balance += payout;
+          sfx.win();
           resultDiv.textContent = `${outcomeLabel} ! Vous avez gagné ${(payout - stake).toFixed(2)}€.`;
           resultDiv.style.color = '#4CAF50';
         } else {
+          sfx.lose();
           resultDiv.textContent = `${outcomeLabel}... Vous avez perdu ${stake.toFixed(2)}€.`;
           resultDiv.style.color = '#f44336';
         }
@@ -851,6 +1402,7 @@
       crashStake = stake;
       crashActive = true;
       crashMultiplier = 1.00;
+      sfx.confirm();
       const r = Math.random();
       crashPoint = Math.min(Math.max(1.00, 0.99 / (1 - r)), 50); // marge de la maison + plafond
       document.getElementById('crashMultiplierDisplay').textContent = crashMultiplier.toFixed(2) + 'x';
@@ -868,6 +1420,7 @@
           document.getElementById('crashStartBtn').disabled = false;
           document.getElementById('crashCashoutBtn').disabled = true;
           crashPlaneExplode();
+          sfx.explosion();
           saveGame();
         } else {
           document.getElementById('crashMultiplierDisplay').textContent = crashMultiplier.toFixed(2) + 'x';
@@ -881,6 +1434,7 @@
       crashActive = false;
       const winnings = crashStake * crashMultiplier;
       balance += winnings;
+      sfx.cashout();
       document.getElementById('crashStatus').textContent = `Retiré à ${crashMultiplier.toFixed(2)}x ! Vous avez gagné ${(winnings - crashStake).toFixed(2)}€.`;
       document.getElementById('crashStartBtn').disabled = false;
       document.getElementById('crashCashoutBtn').disabled = true;
@@ -892,11 +1446,13 @@
     function buyProperty(type) {
       const info = propertyCatalog[type];
       if (balance < info.price) {
+        sfx.denied();
         alert('Fonds insuffisants pour acheter ce bien.');
         return;
       }
       balance -= info.price;
       properties.push({ type, purchasePrice: info.price, purchaseDate: new Date().getTime() });
+      sfx.purchase();
       updateBalance();
       updateRealEstateList();
       saveGame();
@@ -912,6 +1468,7 @@
       const value = getPropertyValue(prop);
       balance += value;
       properties.splice(index, 1);
+      sfx.sell();
       updateBalance();
       updateRealEstateList();
       saveGame();
@@ -924,21 +1481,57 @@
         listDiv.innerHTML = '<p>Vous ne possédez aucun bien immobilier pour le moment.</p>';
         return;
       }
-      listDiv.innerHTML = '';
+      // Regroupe les biens par type pour un affichage clair (avec compteur),
+      // tout en gardant l'index d'origine dans "properties" pour sellProperty().
+      const groups = {};
       properties.forEach((prop, index) => {
-        const info = propertyCatalog[prop.type];
-        const currentValue = getPropertyValue(prop);
-        const gain = currentValue - prop.purchasePrice;
-        const card = document.createElement('div');
-        card.className = 'bet-card';
-        card.innerHTML = `
-          <p><strong>${info.name}</strong></p>
-          <p>Acheté: ${prop.purchasePrice.toLocaleString('fr-FR')}€</p>
-          <p>Valeur actuelle: ${currentValue.toFixed(2)}€ (${gain >= 0 ? '+' : ''}${gain.toFixed(2)}€)</p>
-          <button onclick="sellProperty(${index})">Vendre</button>
-        `;
-        listDiv.appendChild(card);
+        if (!groups[prop.type]) groups[prop.type] = [];
+        groups[prop.type].push({ prop, index });
       });
+
+      let totalValue = 0;
+      let html = '';
+      Object.keys(groups).forEach(type => {
+        const info = propertyCatalog[type];
+        const units = groups[type];
+        let groupValue = 0;
+        let groupPurchase = 0;
+        const unitsHtml = units.map(({ prop, index }) => {
+          const currentValue = getPropertyValue(prop);
+          const gain = currentValue - prop.purchasePrice;
+          groupValue += currentValue;
+          groupPurchase += prop.purchasePrice;
+          totalValue += currentValue;
+          return `
+            <div class="property-unit">
+              <div class="unit-info">
+                <p>Acheté: ${prop.purchasePrice.toLocaleString('fr-FR')}€</p>
+                <p class="unit-value">Valeur actuelle: ${currentValue.toFixed(2)}€ (${gain >= 0 ? '+' : ''}${gain.toFixed(2)}€)</p>
+              </div>
+              <button onclick="sellProperty(${index})">Vendre</button>
+            </div>
+          `;
+        }).join('');
+        const groupGain = groupValue - groupPurchase;
+        html += `
+          <div class="property-group">
+            <div class="property-group-header">
+              <strong>${info.name}</strong>
+              <span class="qty-badge">× ${units.length}</span>
+            </div>
+            <p class="property-group-summary">Valeur totale: ${groupValue.toFixed(2)}€ (${groupGain >= 0 ? '+' : ''}${groupGain.toFixed(2)}€)</p>
+            ${unitsHtml}
+          </div>
+        `;
+      });
+
+      const totalHtml = `
+        <div class="portfolio-total">
+          <span>Patrimoine total (${properties.length} bien${properties.length > 1 ? 's' : ''})</span>
+          <span>${totalValue.toFixed(2)}€</span>
+        </div>
+      `;
+      listDiv.innerHTML = totalHtml + html;
     }
     function placeBet() {
       const sport = document.getElementById('sport').value;
@@ -948,30 +1541,33 @@
       const stake = parseFloat(document.getElementById('stake').value);
       if (bet && betType && odds && stake) {
         if (stake > balance) {
+          sfx.denied();
           alert("Vous n'avez pas assez de fonds pour placer ce pari.");
           return;
         }
-        if (boosters.odds > 0) {
+        if (boosters.odds > 0 && document.getElementById('useOddsBooster').checked) {
           odds += 1.50;
           boosters.odds--;
-          alert("Booster de cote appliqué! La cote a été augmentée de 1.50.");
         }
-        const newBet = { sport, bet, betType, odds, stake, insured: boosters.insurance > 0 };
-        if (newBet.insured) {
+        const useInsurance = boosters.insurance > 0 && document.getElementById('useInsuranceBooster').checked;
+        const newBet = { sport, bet, betType, odds, stake, insured: useInsurance };
+        if (useInsurance) {
           boosters.insurance--;
-          alert("Assurance pari appliquée! Vous serez remboursé en cas de défaite.");
         }
         pendingBets.push(newBet);
         balance -= stake;
+        sfx.confirm();
         updatePendingBets();
         updateBalance();
         updateBoosterCountDisplay();
         saveGame();
-        alert(`Pari placé avec succès !\nSport: ${sport}\nPari: ${bet}\nType de mise: ${betType}\nCote: ${odds}\nMise: ${stake}€`);
+        alert(`Pari placé avec succès !\nSport: ${sport}\nPari: ${bet}\nType de mise: ${betType}\nCote: ${odds}\nMise: ${stake}€${newBet.insured ? '\n(Assurance appliquée)' : ''}`);
         document.getElementById('bet').value = '';
         document.getElementById('betType').value = '';
         document.getElementById('odds').value = '';
         document.getElementById('stake').value = '';
+        document.getElementById('useOddsBooster').checked = false;
+        document.getElementById('useInsuranceBooster').checked = false;
       } else {
         alert('Veuillez remplir tous les champs avant de placer votre pari.');
       }
@@ -1008,21 +1604,25 @@
           balance += bet.stake * bet.odds;
           stats.wins++;
           stats.totalProfit += profit;
+          sfx.win();
           message = `Félicitations ! Vous avez gagné ${profit.toFixed(2)}€ sur ce pari.`;
           break;
         case 'lose':
+          stats.losses++;
           if (bet.insured) {
             balance += bet.stake;
+            sfx.neutral();
             message = `Vous avez perdu, mais votre pari était assuré. Votre mise de ${bet.stake}€ vous a été remboursée.`;
           } else {
-            stats.losses++;
             stats.totalProfit -= bet.stake;
+            sfx.lose();
             message = `Désolé, vous avez perdu ${bet.stake}€ sur ce pari.`;
           }
           break;
         case 'neutral':
           balance += bet.stake;
           stats.neutrals++;
+          sfx.neutral();
           message = `Le pari a été annulé. Votre mise de ${bet.stake}€ vous a été remboursée.`;
           break;
       }
@@ -1056,8 +1656,10 @@
           if (balance >= cost) {
             balance -= cost;
             boosters.odds++;
-            alert("Booster de cote acheté! Il sera appliqué à votre prochain pari.");
+            sfx.purchase();
+            alert("Booster de cote acheté ! Coche la case correspondante sur la page Parier pour l'appliquer à ton prochain pari.");
           } else {
+            sfx.denied();
             alert("Fonds insuffisants pour acheter ce booster.");
           }
           break;
@@ -1066,8 +1668,10 @@
           if (balance >= cost) {
             balance -= cost;
             boosters.insurance++;
-            alert("Assurance pari achetée! Elle sera appliquée à votre prochain pari.");
+            sfx.purchase();
+            alert("Assurance pari achetée ! Coche la case correspondante sur la page Parier pour l'appliquer à ton prochain pari.");
           } else {
+            sfx.denied();
             alert("Fonds insuffisants pour acheter cette assurance.");
           }
           break;
@@ -1093,6 +1697,17 @@
         const el = document.getElementById(id);
         if (el) el.textContent = boosters.insurance;
       });
+      // Active/désactive les cases à cocher de la page Parier selon le stock disponible.
+      const oddsCheckbox = document.getElementById('useOddsBooster');
+      if (oddsCheckbox) {
+        oddsCheckbox.disabled = boosters.odds <= 0;
+        if (boosters.odds <= 0) oddsCheckbox.checked = false;
+      }
+      const insuranceCheckbox = document.getElementById('useInsuranceBooster');
+      if (insuranceCheckbox) {
+        insuranceCheckbox.disabled = boosters.insurance <= 0;
+        if (boosters.insurance <= 0) insuranceCheckbox.checked = false;
+      }
     }
     function buyEnterprise(type) {
       let cost, income;
@@ -1109,8 +1724,10 @@
       if (balance >= cost) {
         balance -= cost;
         enterprises[type]++;
+        sfx.purchase();
         alert(`Félicitations! Vous avez acheté une nouvelle entreprise. Vous gagnerez ${income}€ supplémentaires par jour.`);
       } else {
+        sfx.denied();
         alert("Fonds insuffisants pour acheter cette entreprise.");
       }
       updateBalance();
@@ -1165,12 +1782,36 @@
     function claimDailyBonus() {
       const now = new Date().getTime();
       if (!lastDailyBonusClaim || (now - lastDailyBonusClaim) >= 24 * 60 * 60 * 1000) {
-        balance += 100;
         lastDailyBonusClaim = now;
+        // Tirage pondéré : 35% argent / 35% booster de cote / 20% assurance / 8% jackpot / 2% studio offert
+        const roll = Math.random() * 100;
+        let message = '';
+        if (roll < 35) {
+          const amount = Math.floor(80 + Math.random() * 71); // 80€ à 150€
+          balance += amount;
+          message = `Bonus journalier : +${amount}€ !`;
+        } else if (roll < 70) {
+          boosters.odds++;
+          message = "Bonus journalier : 1 Booster de Cote offert !";
+        } else if (roll < 90) {
+          boosters.insurance++;
+          message = "Bonus journalier : 1 Assurance Pari offerte !";
+        } else if (roll < 98) {
+          balance += 500;
+          message = "🎉 Jackpot journalier : +500€ !!";
+        } else {
+          const info = propertyCatalog.studio;
+          properties.push({ type: 'studio', purchasePrice: info.price, purchaseDate: now });
+          message = "🎉 Jackpot journalier : un Studio offert !!";
+        }
+        sfx.bonus();
         updateBalance();
+        updateBoosterCountDisplay();
+        updateRealEstateList();
         saveGame();
-        alert("Vous avez reçu votre bonus journalier de 100€!");
+        alert(message);
       } else {
+        sfx.denied();
         const timeLeft = 24 * 60 * 60 * 1000 - (now - lastDailyBonusClaim);
         const hoursLeft = Math.floor(timeLeft / (60 * 60 * 1000));
         const minutesLeft = Math.floor((timeLeft % (60 * 60 * 1000)) / (60 * 1000));
@@ -1202,7 +1843,7 @@
         balance = gameData.balance;
         stats = gameData.stats;
         boosters = gameData.boosters;
-        boosterPrices = gameData.boosterPrices || { odds: 100, insurance: 200 };
+        boosterPrices = gameData.boosterPrices || { odds: 150, insurance: 300 };
         enterprises = gameData.enterprises;
         lastDailyUpdate = gameData.lastDailyUpdate;
         lastDailyBonusClaim = gameData.lastDailyBonusClaim;
@@ -1232,6 +1873,7 @@
       updateBoosterPricesDisplay();
       updateBoosterCountDisplay();
       dailyUpdate(); // règle immédiatement les revenus passifs accumulés pendant l'absence
+      showSection(location.hash.replace('#', '') || 'accueil', true);
       setInterval(dailyUpdate, 60000);
       setInterval(saveGame, 60000);  // Autosave every minute
     };
